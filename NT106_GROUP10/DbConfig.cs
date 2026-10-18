@@ -8,9 +8,9 @@ namespace NT106_GROUP10
 {
     public static class DbConfig
     {
-        public static string ConnectionString = @"Server=localhost,1433;Database=NT106_GROUP10_DB;User Id=sa;Password=Sonvo2007;Encrypt=True;TrustServerCertificate=True;";
+        public static string ConnectionString = @"Server=localhost,1433;Database=NT106_GROUP10_DB;User Id=sa;Password=NT106_GROUP10;Encrypt=True;TrustServerCertificate=True;";
     }
-
+    
     public static class SecurityHelper
     {
         public static string HashPassword(string password)

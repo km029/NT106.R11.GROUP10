@@ -21,55 +21,77 @@ namespace NT106_GROUP10
         {
 
         }
-
+        
         private void btnLogin_Click(object sender, EventArgs e)
         {
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Text;
 
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(username) ||
+                string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ Tên đăng nhập và Mật khẩu!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng nhập đầy đủ Tên đăng nhập và Mật khẩu!",
+                    "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            string passwordHash = SecurityHelper.HashPassword(password);
-
-            using (Microsoft.Data.SqlClient.SqlConnection conn = new Microsoft.Data.SqlClient.SqlConnection(DbConfig.ConnectionString))
+            using (Microsoft.Data.SqlClient.SqlConnection conn =
+                   new Microsoft.Data.SqlClient.SqlConnection(DbConfig.ConnectionString))
             {
                 try
                 {
                     conn.Open();
-                    string query = "SELECT UserId, Username FROM Users WHERE Username = @Username AND PasswordHash = @PasswordHash";
 
-                    using (Microsoft.Data.SqlClient.SqlCommand cmd = new Microsoft.Data.SqlClient.SqlCommand(query, conn))
+                    string query =
+                        "SELECT UserId, Username, PasswordHash " +
+                        "FROM Users WHERE Username = @Username";
+
+                    using (Microsoft.Data.SqlClient.SqlCommand cmd =
+                           new Microsoft.Data.SqlClient.SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Username", username);
-                        cmd.Parameters.AddWithValue("@PasswordHash", passwordHash);
 
-                        using (Microsoft.Data.SqlClient.SqlDataReader reader = cmd.ExecuteReader())
+                        using (Microsoft.Data.SqlClient.SqlDataReader reader =
+                               cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
                                 int userId = reader.GetInt32(0);
                                 string loggedUser = reader.GetString(1);
+                                string storedHash = reader.GetString(2);
 
-                                MessageBox.Show($"Đăng nhập thành công! Chào mừng {loggedUser}", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                if (BCrypt.Net.BCrypt.Verify(password, storedHash))
+                                {
+                                    MessageBox.Show("Đăng nhập thành công!",
+                                        "Thành công", MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information);
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Sai mật khẩu!",
+                                        "Lỗi", MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error);
+
+                                    txtPassword.Clear();
+                                    txtPassword.Focus();
+                                }
                             }
                             else
                             {
-                                MessageBox.Show("Tên đăng nhập hoặc mật khẩu không chính xác!", "Lỗi đăng nhập", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Không tìm thấy tài khoản!",
+                                    "Lỗi", MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Lỗi kết nối CSDL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Lỗi kết nối CSDL: " + ex.Message,
+                        "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
-
         private void btnRegister_Click(object sender, EventArgs e)
         {
             RegisterForm regForm = new RegisterForm();
