@@ -65,7 +65,7 @@
             this.txtUsername.ForeColor = System.Drawing.Color.Black;
             this.txtUsername.Location = new System.Drawing.Point(63, 189);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(420, 37);
+            this.txtUsername.Size = new System.Drawing.Size(420, 27);
             this.txtUsername.TabIndex = 9;
             this.txtUsername.TextChanged += new System.EventHandler(this.txtUsername_TextChanged);
             // 
@@ -80,6 +80,7 @@
             this.lblForgotPassword.TabIndex = 8;
             this.lblForgotPassword.Text = "Quên mật khẩu";
             this.lblForgotPassword.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblForgotPassword.Click += new System.EventHandler(this.lblForgotPassword_Click);
             // 
             // btnRegister
             // 
@@ -118,8 +119,9 @@
             this.lblUsername.Name = "lblUsername";
             this.lblUsername.Size = new System.Drawing.Size(420, 35);
             this.lblUsername.TabIndex = 5;
-            this.lblUsername.Text = "Tên đăng nhập";
+            this.lblUsername.Text = "Email";
             this.lblUsername.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblUsername.Click += new System.EventHandler(this.lblUsername_Click);
             // 
             // txtPassword
             // 
@@ -129,7 +131,7 @@
             this.txtPassword.ForeColor = System.Drawing.Color.Black;
             this.txtPassword.Location = new System.Drawing.Point(63, 278);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(420, 37);
+            this.txtPassword.Size = new System.Drawing.Size(420, 27);
             this.txtPassword.TabIndex = 4;
             this.txtPassword.UseSystemPasswordChar = true;
             // 
@@ -167,7 +169,7 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 28F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.ClientSize = new System.Drawing.Size(978, 694);
