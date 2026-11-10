@@ -64,5 +64,7 @@ namespace NT106_GROUP10
         {
             this.Close();
         }
+
+        
     }
 }

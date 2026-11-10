@@ -86,5 +86,7 @@ namespace NT106_GROUP10
                 btnResetPassword.Enabled = true;
             }
         }
+
+      
     }
 }

@@ -40,24 +40,27 @@
             // 
             // txtResetCode
             // 
-            this.txtResetCode.Location = new System.Drawing.Point(155, 84);
+            this.txtResetCode.Location = new System.Drawing.Point(207, 108);
+            this.txtResetCode.Margin = new System.Windows.Forms.Padding(4);
             this.txtResetCode.Name = "txtResetCode";
-            this.txtResetCode.Size = new System.Drawing.Size(210, 20);
+            this.txtResetCode.Size = new System.Drawing.Size(279, 22);
             this.txtResetCode.TabIndex = 0;
             // 
             // txtNewPassword
             // 
-            this.txtNewPassword.Location = new System.Drawing.Point(155, 143);
+            this.txtNewPassword.Location = new System.Drawing.Point(207, 176);
+            this.txtNewPassword.Margin = new System.Windows.Forms.Padding(4);
             this.txtNewPassword.Name = "txtNewPassword";
-            this.txtNewPassword.Size = new System.Drawing.Size(210, 20);
+            this.txtNewPassword.Size = new System.Drawing.Size(279, 22);
             this.txtNewPassword.TabIndex = 1;
             this.txtNewPassword.UseSystemPasswordChar = true;
             // 
             // txtConfirmNewPassword
             // 
-            this.txtConfirmNewPassword.Location = new System.Drawing.Point(155, 217);
+            this.txtConfirmNewPassword.Location = new System.Drawing.Point(207, 305);
+            this.txtConfirmNewPassword.Margin = new System.Windows.Forms.Padding(4);
             this.txtConfirmNewPassword.Name = "txtConfirmNewPassword";
-            this.txtConfirmNewPassword.Size = new System.Drawing.Size(210, 20);
+            this.txtConfirmNewPassword.Size = new System.Drawing.Size(279, 22);
             this.txtConfirmNewPassword.TabIndex = 2;
             this.txtConfirmNewPassword.UseSystemPasswordChar = true;
             // 
@@ -66,9 +69,10 @@
             this.btnResetPassword.BackColor = System.Drawing.Color.RoyalBlue;
             this.btnResetPassword.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnResetPassword.ForeColor = System.Drawing.Color.White;
-            this.btnResetPassword.Location = new System.Drawing.Point(157, 266);
+            this.btnResetPassword.Location = new System.Drawing.Point(209, 376);
+            this.btnResetPassword.Margin = new System.Windows.Forms.Padding(4);
             this.btnResetPassword.Name = "btnResetPassword";
-            this.btnResetPassword.Size = new System.Drawing.Size(188, 33);
+            this.btnResetPassword.Size = new System.Drawing.Size(251, 41);
             this.btnResetPassword.TabIndex = 3;
             this.btnResetPassword.Text = "ĐẶT LẠI MẬT KHẨU";
             this.btnResetPassword.UseVisualStyleBackColor = false;
@@ -76,48 +80,56 @@
             // 
             // label2
             // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.RoyalBlue;
-            this.label2.Location = new System.Drawing.Point(152, 9);
+            this.label2.Location = new System.Drawing.Point(202, 24);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(213, 30);
+            this.label2.Size = new System.Drawing.Size(274, 37);
             this.label2.TabIndex = 4;
             this.label2.Text = "ĐẶT LẠI MẬT KHẨU";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(154, 68);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(205, 84);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(72, 13);
+            this.label1.Size = new System.Drawing.Size(108, 20);
             this.label1.TabIndex = 5;
             this.label1.Text = "Mã khôi phục";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(154, 127);
+            this.label3.Location = new System.Drawing.Point(205, 156);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(71, 13);
+            this.label3.Size = new System.Drawing.Size(86, 16);
             this.label3.TabIndex = 6;
             this.label3.Text = "Mật khẩu mới";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(154, 201);
+            this.label4.Location = new System.Drawing.Point(205, 247);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(119, 13);
+            this.label4.Size = new System.Drawing.Size(144, 16);
             this.label4.TabIndex = 7;
             this.label4.Text = "Xác nhận mật khẩu mới";
             // 
             // ResetPasswordForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(534, 394);
+            this.ClientSize = new System.Drawing.Size(704, 523);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label1);
@@ -126,6 +138,7 @@
             this.Controls.Add(this.txtConfirmNewPassword);
             this.Controls.Add(this.txtNewPassword);
             this.Controls.Add(this.txtResetCode);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "ResetPasswordForm";
             this.Text = "Đặt lại mật khẩu";
             this.ResumeLayout(false);
