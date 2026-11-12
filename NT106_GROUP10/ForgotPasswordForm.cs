@@ -12,11 +12,12 @@ namespace NT106_GROUP10
 
         private void label1_Click(object sender, EventArgs e)
         {
+            this.Close();
         }
 
         private async void btnSendReset_Click(object sender, EventArgs e)
         {
-            string email = txtRecoveryEmail.Text.Trim();
+            string email = txtRecoveryEmail.TextButton.Trim();
 
             if (string.IsNullOrWhiteSpace(email))
             {
@@ -31,13 +32,26 @@ namespace NT106_GROUP10
             {
                 await SupabaseAuthService.SendPasswordResetAsync(email);
 
-                MessageBox.Show(
-                    "Nếu email này có tài khoản, hãy kiểm tra hộp thư và nhập mã khôi phục.");
+                MessageBox.Show("Hãy kiểm tra hộp thư và nhập mã khôi phục.");
+                this.Hide();
+                ResetPasswordForm resetForm = new ResetPasswordForm(email);
+                // Đặt form mới xuất hiện trùng khít vị trí form cũ để không bị nhảy khung hình
+                resetForm.StartPosition = FormStartPosition.Manual;
+                resetForm.Location = this.Location;
 
-                using (var resetForm = new ResetPasswordForm(email))
-                {
-                    resetForm.ShowDialog(this);
-                }
+                resetForm.FormClosed += (s, args) => this.Close();
+                // Gán Owner là LoginForm để Windows ép resetForm luôn nằm trên LoginForm
+                Form loginForm = this.Owner ?? Application.OpenForms["LoginForm"];
+                if (loginForm != null)
+                    resetForm.Show(loginForm);
+                else
+                    resetForm.Show();
+
+                this.Hide();
+                resetForm.BringToFront();
+                resetForm.Activate();
+
+
             }
             catch (Exception ex)
             {
@@ -53,9 +67,6 @@ namespace NT106_GROUP10
             }
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            this.Close();
-        }
+        
     }
 }

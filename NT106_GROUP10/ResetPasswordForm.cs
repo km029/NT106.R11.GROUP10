@@ -17,15 +17,13 @@ namespace NT106_GROUP10
             _recoveryEmail = email;
         }
 
-        private void label2_Click(object sender, EventArgs e)
-        {
-        }
+        
 
         private async void btnResetPassword_Click(object sender, EventArgs e)
         {
-            string code = txtResetCode.Text.Trim();
-            string newPassword = txtNewPassword.Text;
-            string confirmPassword = txtConfirmNewPassword.Text;
+            string code = txtResetCode.TextButton.Trim();
+            string newPassword = txtNewPassword.TextButton;
+            string confirmPassword = txtConfirmNewPassword.TextButton;
 
             if (string.IsNullOrWhiteSpace(_recoveryEmail))
             {
@@ -45,7 +43,7 @@ namespace NT106_GROUP10
             if (newPassword != confirmPassword)
             {
                 MessageBox.Show("Hai mật khẩu mới không khớp.");
-                txtConfirmNewPassword.Clear();
+                txtConfirmNewPassword.Text= "";
                 txtConfirmNewPassword.Focus();
                 return;
             }
@@ -57,9 +55,9 @@ namespace NT106_GROUP10
                 await SupabaseAuthService.ResetPasswordAsync(
                     _recoveryEmail, code, newPassword);
 
-                txtResetCode.Clear();
-                txtNewPassword.Clear();
-                txtConfirmNewPassword.Clear();
+                txtResetCode.Text = "";
+                txtNewPassword.Text ="";
+                txtConfirmNewPassword.Text = "";
 
                 MessageBox.Show(
                     "Đặt lại mật khẩu thành công! Hãy đăng nhập bằng mật khẩu mới.",
@@ -72,8 +70,8 @@ namespace NT106_GROUP10
             }
             catch (Exception ex)
             {
-                txtNewPassword.Clear();
-                txtConfirmNewPassword.Clear();
+                txtNewPassword.Text = "";
+                txtConfirmNewPassword.Text = "";
 
                 MessageBox.Show(
                     ex.Message,
@@ -87,6 +85,6 @@ namespace NT106_GROUP10
             }
         }
 
-      
+        
     }
 }

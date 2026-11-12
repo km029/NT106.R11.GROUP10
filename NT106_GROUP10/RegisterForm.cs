@@ -15,16 +15,15 @@ namespace NT106_GROUP10
         public RegisterForm()
         {
             InitializeComponent();
-            txtRegPassword.UseSystemPasswordChar = true;
-            txtConfirmPassword.UseSystemPasswordChar = true;
+            
         }
 
         private async void btnDoRegister_Click(object sender, EventArgs e)
         {
-            string username = txtRegUsername.Text.Trim();
-            string email = txtRegEmail.Text.Trim();
-            string password = txtRegPassword.Text;
-            string confirmPassword = txtConfirmPassword.Text;
+            string username = txtRegUsername.TextButton.Trim();
+            string email = txtRegEmail.TextButton.Trim();
+            string password = txtRegPassword.TextButton;
+            string confirmPassword = txtConfirmPassword.TextButton;
 
             if (string.IsNullOrWhiteSpace(username) ||
                 string.IsNullOrWhiteSpace(email) ||
@@ -45,10 +44,11 @@ namespace NT106_GROUP10
 
             try
             {
+                MessageBox.Show("Đã gửi yêu cầu đăng kí. Hãy kiểm tra hộp thư email để xác nhận yêu cầu");
                 await SupabaseAuthService.SignUpAsync(username, email, password);
 
-                MessageBox.Show(
-                    "Đã gửi yêu cầu đăng ký. Hãy kiểm tra email xác nhận nếu được yêu cầu.");
+   //             MessageBox.Show(
+     //               "Đã gửi yêu cầu đăng ký. Hãy kiểm tra email xác nhận nếu được yêu cầu.");
                 Close();
             }
             catch (Exception ex)

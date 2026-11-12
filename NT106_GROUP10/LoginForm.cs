@@ -10,22 +10,35 @@ using System.Windows.Forms;
 
 namespace NT106_GROUP10
 {
-    public partial class Form1 : Form
+    public partial class LoginForm : Form
     {
-        public Form1()
+        public LoginForm()
         {
             InitializeComponent();
+            //Tạo bộ đệm để khi chạy vào giao diện đăng nhập không bị nháy khi đè ảnh mờ
+             this.DoubleBuffered = true;
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint |
+                           ControlStyles.UserPaint |
+                           ControlStyles.OptimizedDoubleBuffer, true);
+           this.UpdateStyles();
+            //Làm hiệu ứng trong suốt cho panel đăng nhập
+            pnlLogin.BackColor = Color.FromArgb(220, 255, 255, 255);
         }
-
-        private void txtUsername_TextChanged(object sender, EventArgs e)
-        {
-
+        protected override CreateParams CreateParams
+       {
+           get
+            {
+               CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000; // WS_EX_COMPOSITED
+               return cp;
+            }
         }
+       
 
         private async void btnLogin_Click(object sender, EventArgs e)
         {
-            string email = txtUsername.Text.Trim();
-            string password = txtPassword.Text;
+            string email = txtUsername.TextButton.Trim();
+            string password = txtPassword.TextButton;
 
             if (string.IsNullOrWhiteSpace(email) ||
                 string.IsNullOrWhiteSpace(password))
@@ -41,10 +54,13 @@ namespace NT106_GROUP10
                 await SupabaseAuthService.SignInAsync(email, password);
 
                 MessageBox.Show(
-                    "Đăng nhập Supabase thành công!",
+                    "Đăng nhập thành công!",
                     "Thành công",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
+                    MainForm mainForm = new MainForm();
+                    mainForm.Show();
+                    this.Hide();
             }
             catch (Exception ex)
             {
@@ -54,8 +70,8 @@ namespace NT106_GROUP10
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                txtPassword.Clear();
-                txtPassword.Focus();
+                txtPassword.Text = "";
+                txtPassword.Text = "";
             }
             finally
             {
