@@ -48,7 +48,15 @@ namespace NT106_GROUP10
                 return;
             }
 
+            string originalText = btnResetPassword.ButtonText;
+
             btnResetPassword.Enabled = false;
+            btnResetPassword.ButtonText = "Đang đặt lại mật khẩu...";
+            btnResetPassword.Invalidate();
+            btnResetPassword.Update();
+
+   
+            this.Cursor = Cursors.WaitCursor;
 
             try
             {
@@ -82,6 +90,8 @@ namespace NT106_GROUP10
             finally
             {
                 btnResetPassword.Enabled = true;
+                btnResetPassword.ButtonText = originalText;
+                this.Cursor = Cursors.Default;
             }
         }
 

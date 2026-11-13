@@ -26,7 +26,12 @@ namespace NT106_GROUP10
                 return;
             }
 
+            string originalText = btnSendReset.ButtonText;
             btnSendReset.Enabled = false;
+            btnSendReset.ButtonText = "Đang tải...";
+            btnSendReset.Invalidate();
+            btnSendReset.Update();
+            this.Cursor = Cursors.WaitCursor;
 
             try
             {
@@ -64,6 +69,8 @@ namespace NT106_GROUP10
             finally
             {
                 btnSendReset.Enabled = true;
+                btnSendReset.ButtonText = originalText;
+                this.Cursor = Cursors.Default;
             }
         }
 
