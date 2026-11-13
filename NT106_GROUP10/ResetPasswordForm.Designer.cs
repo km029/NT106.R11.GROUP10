@@ -150,6 +150,7 @@
             this.txtConfirmNewPassword.LinearGradientPen = false;
             this.txtConfirmNewPassword.Location = new System.Drawing.Point(91, 332);
             this.txtConfirmNewPassword.Name = "txtConfirmNewPassword";
+            this.txtConfirmNewPassword.Password = true;
             this.txtConfirmNewPassword.PenWidth = 15;
             this.txtConfirmNewPassword.RGB = false;
             this.txtConfirmNewPassword.Rounding = true;
@@ -180,6 +181,7 @@
             this.txtNewPassword.LinearGradientPen = false;
             this.txtNewPassword.Location = new System.Drawing.Point(91, 233);
             this.txtNewPassword.Name = "txtNewPassword";
+            this.txtNewPassword.Password = true;
             this.txtNewPassword.PenWidth = 15;
             this.txtNewPassword.RGB = false;
             this.txtNewPassword.Rounding = true;
