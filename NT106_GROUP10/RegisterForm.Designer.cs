@@ -62,9 +62,9 @@
             this.lblUsername.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
             this.lblUsername.Location = new System.Drawing.Point(88, 110);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(152, 28);
+            this.lblUsername.Size = new System.Drawing.Size(140, 28);
             this.lblUsername.TabIndex = 1;
-            this.lblUsername.Text = "Tên đăng nhập";
+            this.lblUsername.Text = "Tên tài khoản";
             // 
             // lblPassword
             // 
@@ -108,9 +108,9 @@
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
             this.label1.Location = new System.Drawing.Point(88, 207);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(64, 28);
+            this.label1.Size = new System.Drawing.Size(171, 28);
             this.label1.TabIndex = 10;
-            this.label1.Text = "Email";
+            this.label1.Text = "Email đăng nhập";
             // 
             // panel1
             // 

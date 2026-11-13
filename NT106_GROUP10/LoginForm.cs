@@ -46,36 +46,36 @@ namespace NT106_GROUP10
                 MessageBox.Show("Vui lòng nhập email và mật khẩu!");
                 return;
             }
-
+            // Vô hiệu hóa nút đăng nhập để tránh spawn và để hiệu ứng đang chạy
             btnLogin.Enabled = false;
-
+            btnLogin.ButtonText = "Đang đăng nhập...";
+            btnLogin.Invalidate();
+            btnLogin.Update();
+            // Hiển thị con trỏ chuột thành icon đang load
+            this.Cursor = Cursors.WaitCursor;
             try
             {
                 await SupabaseAuthService.SignInAsync(email, password);
 
-                MessageBox.Show(
-                    "Đăng nhập thành công!",
-                    "Thành công",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
                     MainForm mainForm = new MainForm();
                     mainForm.Show();
                     this.Hide();
             }
-            catch (Exception ex)
-            {
+            catch(Exception)
+{
                 MessageBox.Show(
-                    ex.Message,
+                    "Tài khoản hoặc mật khẩu không đúng",
                     "Đăng nhập chưa thành công",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                txtPassword.Text = "";
-                txtPassword.Text = "";
+                txtPassword.TextButton = "";
             }
             finally
             {
                 btnLogin.Enabled = true;
+                btnLogin.ButtonText = "Đăng nhập";
+                this.Cursor = Cursors.Default;
             }
         }
         private void btnRegister_Click(object sender, EventArgs e)
@@ -84,10 +84,7 @@ namespace NT106_GROUP10
             regForm.ShowDialog();
         }
 
-        private void lblUsername_Click(object sender, EventArgs e)
-        {
-
-        }
+        
 
         private void lblForgotPassword_Click(object sender, EventArgs e)
         {

@@ -168,7 +168,7 @@
             this.lblUsername.TabIndex = 5;
             this.lblUsername.Text = "Email";
             this.lblUsername.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblUsername.Click += new System.EventHandler(this.lblUsername_Click);
+
             // 
             // lblPassword
             // 

@@ -34,30 +34,52 @@ namespace NT106_GROUP10
                 return;
             }
 
+            // 1. Kiểm tra định dạng email hợp lệ
+            if (!System.Text.RegularExpressions.Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                MessageBox.Show("Định dạng email không hợp lệ.");
+                txtRegEmail.Focus();
+                return;
+            }
+
             if (password != confirmPassword)
             {
                 MessageBox.Show("Mật khẩu xác nhận không khớp.");
                 return;
             }
 
+            // Vô hiệu hóa nút đăng ký để tránh bấm nhiều lần và hiển thị trạng thái đang chạy
             btnDoRegister.Enabled = false;
+            btnDoRegister.ButtonText = "Đang đăng ký...";
+            btnDoRegister.Invalidate();
+            btnDoRegister.Update();
+            this.Cursor = Cursors.WaitCursor;
 
             try
             {
-                MessageBox.Show("Đã gửi yêu cầu đăng kí. Hãy kiểm tra hộp thư email để xác nhận yêu cầu");
+                // 2. Gọi API đăng ký xong rồi mới hiện thông báo thành công
                 await SupabaseAuthService.SignUpAsync(username, email, password);
 
-   //             MessageBox.Show(
-     //               "Đã gửi yêu cầu đăng ký. Hãy kiểm tra email xác nhận nếu được yêu cầu.");
+                MessageBox.Show(
+                    "Đã gửi yêu cầu đăng ký. Hãy kiểm tra hộp thư email để xác nhận yêu cầu.",
+                    "Thành công",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
                 Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show("Đăng ký chưa thành công: " + ex.Message);
+                MessageBox.Show(
+                    "Đăng ký chưa thành công",
+                    "Lỗi",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
             finally
             {
                 btnDoRegister.Enabled = true;
+                btnDoRegister.ButtonText = "Đăng ký tài khoản";
+                this.Cursor = Cursors.Default;
             }
         }
         private void lnkBackToLogin_Click(object sender, EventArgs e)
