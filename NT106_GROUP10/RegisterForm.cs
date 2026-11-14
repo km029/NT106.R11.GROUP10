@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace NT106_GROUP10
@@ -15,7 +11,36 @@ namespace NT106_GROUP10
         public RegisterForm()
         {
             InitializeComponent();
-            
+
+            this.DoubleBuffered = true;
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint |
+                          ControlStyles.UserPaint |
+                          ControlStyles.OptimizedDoubleBuffer, true);
+            this.UpdateStyles();
+
+            // Bật DoubleBuffered cho toàn bộ Panel, nút bấm và ô nhập trên Form
+            EnableDoubleBufferRecursive(this);
+        }
+
+        private static void EnableDoubleBufferRecursive(Control parent)
+        {
+            foreach (Control ctrl in parent.Controls)
+            {
+                typeof(Control).InvokeMember("DoubleBuffered",
+                    BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                    null, ctrl, new object[] { true });
+
+                // Nếu có Panel đang để màu bán trong suốt (Alpha < 255) thì chuyển về màu đặc để hết lag
+                if (ctrl is Panel && ctrl.BackColor.A < 255 && ctrl.BackColor != Color.Transparent)
+                {
+                    ctrl.BackColor = Color.White;
+                }
+
+                if (ctrl.HasChildren)
+                {
+                    EnableDoubleBufferRecursive(ctrl);
+                }
+            }
         }
 
         private async void btnDoRegister_Click(object sender, EventArgs e)
@@ -34,46 +59,80 @@ namespace NT106_GROUP10
                 return;
             }
 
-            // 1. Kiểm tra định dạng email hợp lệ
-            if (!System.Text.RegularExpressions.Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            if (username.Length < 3 || username.Contains("@") || username.Contains(" "))
+            {
+                MessageBox.Show("Username phải từ 3 ký tự trở lên, không chứa dấu cách hoặc ký tự @.");
+                txtRegUsername.Focus();
+                return;
+            }
+
+            if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
             {
                 MessageBox.Show("Định dạng email không hợp lệ.");
                 txtRegEmail.Focus();
                 return;
             }
 
-            if (password != confirmPassword)
+            if (!SupabaseAuthService.IsValidPassword(password))
             {
-                MessageBox.Show("Mật khẩu xác nhận không khớp.");
+                MessageBox.Show(
+                    "Mật khẩu phải có tối thiểu 8 ký tự, bao gồm: chữ hoa, chữ thường, chữ số và ký tự đặc biệt.",
+                    "Mật khẩu chưa đạt yêu cầu",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                txtRegPassword.Focus();
                 return;
             }
 
-            // Vô hiệu hóa nút đăng ký để tránh bấm nhiều lần và hiển thị trạng thái đang chạy
+            if (password != confirmPassword)
+            {
+                MessageBox.Show("Mật khẩu xác nhận không khớp.");
+                txtConfirmPassword.Focus();
+                return;
+            }
+
             btnDoRegister.Enabled = false;
             btnDoRegister.ButtonText = "Đang đăng ký...";
-            btnDoRegister.Invalidate();
-            btnDoRegister.Update();
             this.Cursor = Cursors.WaitCursor;
 
             try
             {
-                // 2. Gọi API đăng ký xong rồi mới hiện thông báo thành công
+                string duplicateStatus = await SupabaseAuthService.CheckDuplicateAsync(username, email);
+
+                if (duplicateStatus == "USERNAME_EXISTS")
+                {
+                    MessageBox.Show("Username này đã có người sử dụng, vui lòng chọn tên khác.", "Trùng Username", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtRegUsername.Focus();
+                    return;
+                }
+
+                if (duplicateStatus == "EMAIL_EXISTS")
+                {
+                    MessageBox.Show("Email này đã được đăng ký, vui lòng dùng email khác.", "Trùng Email", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtRegEmail.Focus();
+                    return;
+                }
+
                 await SupabaseAuthService.SignUpAsync(username, email, password);
 
                 MessageBox.Show(
-                    "Đã gửi yêu cầu đăng ký. Hãy kiểm tra hộp thư email để xác nhận yêu cầu.",
+                    "Đã tạo tài khoản thành công, vui lòng dùng tên đăng nhập (hoặc email) và mật khẩu để đăng nhập.",
                     "Thành công",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
                 Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show(
-                    "Đăng ký chưa thành công",
-                    "Lỗi",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                string msg = "Đăng ký chưa thành công.";
+                if (ex.Message.Contains("Database error saving new user"))
+                    msg = "Username hoặc Email này đã tồn tại.";
+                else if (ex.Message.Contains("User already registered"))
+                    msg = "Email này đã được đăng ký.";
+                else if (ex.Message.IndexOf("rate limit", StringComparison.OrdinalIgnoreCase) >= 0)
+                    msg = "Bạn thao tác quá nhanh, vui lòng thử lại sau.";
+
+                MessageBox.Show(msg, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -82,11 +141,10 @@ namespace NT106_GROUP10
                 this.Cursor = Cursors.Default;
             }
         }
+
         private void lnkBackToLogin_Click(object sender, EventArgs e)
         {
             this.Close();
         }
-
-        
     }
 }
