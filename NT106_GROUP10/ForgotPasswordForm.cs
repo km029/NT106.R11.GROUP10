@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Drawing;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace NT106_GROUP10
@@ -8,6 +11,34 @@ namespace NT106_GROUP10
         public ForgotPasswordForm()
         {
             InitializeComponent();
+
+            this.DoubleBuffered = true;
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint |
+                          ControlStyles.UserPaint |
+                          ControlStyles.OptimizedDoubleBuffer, true);
+            this.UpdateStyles();
+
+            EnableDoubleBufferRecursive(this);
+        }
+
+        private static void EnableDoubleBufferRecursive(Control parent)
+        {
+            foreach (Control ctrl in parent.Controls)
+            {
+                typeof(Control).InvokeMember("DoubleBuffered",
+                    BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                    null, ctrl, new object[] { true });
+
+                if (ctrl is Panel && ctrl.BackColor.A < 255 && ctrl.BackColor != Color.Transparent)
+                {
+                    ctrl.BackColor = Color.White;
+                }
+
+                if (ctrl.HasChildren)
+                {
+                    EnableDoubleBufferRecursive(ctrl);
+                }
+            }
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -26,37 +57,69 @@ namespace NT106_GROUP10
                 return;
             }
 
+            // 1. Kiểm tra định dạng email có @
+            if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                MessageBox.Show(
+                    "Định dạng email không hợp lệ (phải có @ và tên miền).",
+                    "Lỗi định dạng",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                txtRecoveryEmail.Focus();
+                return;
+            }
+
             string originalText = btnSendReset.ButtonText;
             btnSendReset.Enabled = false;
-            btnSendReset.ButtonText = "Đang tải...";
-            btnSendReset.Invalidate();
-            btnSendReset.Update();
+            btnSendReset.ButtonText = "Đang kiểm tra...";
             this.Cursor = Cursors.WaitCursor;
 
             try
             {
+                // 2. Kiểm tra email đã tồn tại trong hệ thống chưa
+                bool emailExists = await SupabaseAuthService.AccountExistsAsync(email);
+                if (!emailExists)
+                {
+                    var askRegister = MessageBox.Show(
+                        "Email này chưa tồn tại trong hệ thống. Bạn có muốn chuyển sang trang Đăng ký tạo tài khoản mới không?",
+                        "Email chưa đăng ký",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (askRegister == DialogResult.Yes)
+                    {
+                        using (var regForm = new RegisterForm())
+                        {
+                            regForm.ShowDialog(this);
+                        }
+                    }
+                    return;
+                }
+
+                // 3. Nếu đã đăng ký -> gửi mã xác thực
+                btnSendReset.ButtonText = "Đang gửi mã...";
                 await SupabaseAuthService.SendPasswordResetAsync(email);
 
-                MessageBox.Show("Hãy kiểm tra hộp thư và nhập mã khôi phục.");
+                MessageBox.Show(
+                    "Đã gửi mã xác thực, vui lòng kiểm tra email.",
+                    "Thành công",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
                 this.Hide();
                 ResetPasswordForm resetForm = new ResetPasswordForm(email);
-                // Đặt form mới xuất hiện trùng khít vị trí form cũ để không bị nhảy khung hình
                 resetForm.StartPosition = FormStartPosition.Manual;
                 resetForm.Location = this.Location;
-
                 resetForm.FormClosed += (s, args) => this.Close();
-                // Gán Owner là LoginForm để Windows ép resetForm luôn nằm trên LoginForm
+
                 Form loginForm = this.Owner ?? Application.OpenForms["LoginForm"];
                 if (loginForm != null)
                     resetForm.Show(loginForm);
                 else
                     resetForm.Show();
 
-                this.Hide();
                 resetForm.BringToFront();
                 resetForm.Activate();
-
-
             }
             catch (Exception ex)
             {
@@ -73,7 +136,5 @@ namespace NT106_GROUP10
                 this.Cursor = Cursors.Default;
             }
         }
-
-        
     }
 }

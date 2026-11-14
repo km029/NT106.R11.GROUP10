@@ -44,7 +44,8 @@
             // pnlLogin
             // 
             this.pnlLogin.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.pnlLogin.BackColor = System.Drawing.Color.White;
+            this.pnlLogin.BackColor = System.Drawing.SystemColors.Control;
+            this.pnlLogin.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.pnlLogin.Controls.Add(this.txtPassword);
             this.pnlLogin.Controls.Add(this.txtUsername);
             this.pnlLogin.Controls.Add(this.btnRegister);
@@ -86,6 +87,7 @@
             this.txtPassword.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             this.txtPassword.TabIndex = 13;
             this.txtPassword.Tag = "Cyber";
+            this.txtPassword.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.txtPassword.TextButton = "";
             this.txtPassword.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             this.txtPassword.Timer_RGB = 300;
@@ -116,6 +118,7 @@
             this.txtUsername.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             this.txtUsername.TabIndex = 12;
             this.txtUsername.Tag = "Cyber";
+            this.txtUsername.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.txtUsername.TextButton = "";
             this.txtUsername.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             this.txtUsername.Timer_RGB = 300;
@@ -241,7 +244,7 @@
             // 
             // LoginForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 23F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.BackgroundImage = global::NT106_GROUP10.Properties.Resources.BackgroundLogin;

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace NT106_GROUP10
@@ -10,6 +12,14 @@ namespace NT106_GROUP10
         public ResetPasswordForm()
         {
             InitializeComponent();
+
+            this.DoubleBuffered = true;
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint |
+                          ControlStyles.UserPaint |
+                          ControlStyles.OptimizedDoubleBuffer, true);
+            this.UpdateStyles();
+
+            EnableDoubleBufferRecursive(this);
         }
 
         public ResetPasswordForm(string email) : this()
@@ -17,7 +27,25 @@ namespace NT106_GROUP10
             _recoveryEmail = email;
         }
 
-        
+        private static void EnableDoubleBufferRecursive(Control parent)
+        {
+            foreach (Control ctrl in parent.Controls)
+            {
+                typeof(Control).InvokeMember("DoubleBuffered",
+                    BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                    null, ctrl, new object[] { true });
+
+                if (ctrl is Panel && ctrl.BackColor.A < 255 && ctrl.BackColor != Color.Transparent)
+                {
+                    ctrl.BackColor = Color.White;
+                }
+
+                if (ctrl.HasChildren)
+                {
+                    EnableDoubleBufferRecursive(ctrl);
+                }
+            }
+        }
 
         private async void btnResetPassword_Click(object sender, EventArgs e)
         {
@@ -40,10 +68,22 @@ namespace NT106_GROUP10
                 return;
             }
 
+            // Kiểm tra định dạng mật khẩu mới: >= 8 ký tự, hoa, thường, số, ký tự đặc biệt
+            if (!SupabaseAuthService.IsValidPassword(newPassword))
+            {
+                MessageBox.Show(
+                    "Mật khẩu mới phải có tối thiểu 8 ký tự, bao gồm: chữ hoa, chữ thường, chữ số và ký tự đặc biệt.",
+                    "Mật khẩu chưa đạt yêu cầu",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                txtNewPassword.Focus();
+                return;
+            }
+
             if (newPassword != confirmPassword)
             {
                 MessageBox.Show("Hai mật khẩu mới không khớp.");
-                txtConfirmNewPassword.Text= "";
+                txtConfirmNewPassword.TextButton = "";
                 txtConfirmNewPassword.Focus();
                 return;
             }
@@ -52,10 +92,6 @@ namespace NT106_GROUP10
 
             btnResetPassword.Enabled = false;
             btnResetPassword.ButtonText = "Đang đặt lại mật khẩu...";
-            btnResetPassword.Invalidate();
-            btnResetPassword.Update();
-
-   
             this.Cursor = Cursors.WaitCursor;
 
             try
@@ -63,9 +99,9 @@ namespace NT106_GROUP10
                 await SupabaseAuthService.ResetPasswordAsync(
                     _recoveryEmail, code, newPassword);
 
-                txtResetCode.Text = "";
-                txtNewPassword.Text ="";
-                txtConfirmNewPassword.Text = "";
+                txtResetCode.TextButton = "";
+                txtNewPassword.TextButton = "";
+                txtConfirmNewPassword.TextButton = "";
 
                 MessageBox.Show(
                     "Đặt lại mật khẩu thành công! Hãy đăng nhập bằng mật khẩu mới.",
@@ -78,8 +114,8 @@ namespace NT106_GROUP10
             }
             catch (Exception ex)
             {
-                txtNewPassword.Text = "";
-                txtConfirmNewPassword.Text = "";
+                txtNewPassword.TextButton = "";
+                txtConfirmNewPassword.TextButton = "";
 
                 MessageBox.Show(
                     ex.Message,
@@ -94,7 +130,5 @@ namespace NT106_GROUP10
                 this.Cursor = Cursors.Default;
             }
         }
-
-        
     }
 }
