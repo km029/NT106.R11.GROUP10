@@ -14,6 +14,11 @@ namespace NT106_GROUP10
 {
     public partial class MainForm : Form
     {
+        private ProfileControl _profileControl;
+        private SearchControl _search;
+        private HomeControl _homeControl;
+        private ReelsControl _reelsControl;
+        private MessengerControl _messengerControl;
         //Hàm hệ thống hỗ trợ bo tròn góc
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
         private static extern IntPtr CreateRoundRectRgn(
@@ -40,8 +45,24 @@ namespace NT106_GROUP10
             Profile.Click += (s, e) => SelectTab(Profile);
             // Mặc định chọn sẵn Trang chủ khi mở app
             SelectTab(Home);
+            Home_Click(Home, EventArgs.Empty);
         }
-        private void SelectTab(Button activeBtn)
+
+        // Hàm dùng chung để nhúng và chuyển đổi các trang vào panel bên phải
+        private void ShowPage(UserControl page)
+        {
+            Content.SuspendLayout();
+            // Nếu panel Content chưa chứa trang này thì thêm vào và cho giãn đầy khung
+            if (!Content.Controls.Contains(page))
+            {
+                page.Dock = DockStyle.Fill;
+                Content.Controls.Add(page);
+            }
+            // Đưa trang được chọn lên lớp trên cùng để hiển thị
+            page.BringToFront();
+            Content.ResumeLayout();
+        }
+        private void SelectTab(Button BamNut)
         {
             // Đưa cả 5 tab về trạng thái bình thường: chữ đen thường + icon nét mảnh đen gốc
             Home.ForeColor = Color.Black;
@@ -65,19 +86,19 @@ namespace NT106_GROUP10
             Profile.Image = Properties.Resources.ic_profile_line_36;
 
             // Tô xanh (0, 149, 246) + in đậm chữ + đổi icon đặc (fill) cho tab đang chọn
-            activeBtn.ForeColor = activeBlue;
-            activeBtn.Font = new Font(activeBtn.Font, FontStyle.Bold);
+            BamNut.ForeColor = activeBlue;
+            BamNut.Font = new Font(BamNut.Font, FontStyle.Bold);
 
-            if (activeBtn == Home)
-                activeBtn.Image = ColorizeIcon(Properties.Resources.ic_home_fill_36, activeBlue);
-            else if (activeBtn == Reels)
-                activeBtn.Image = ColorizeIcon(Properties.Resources.ic_reels_fill1, activeBlue);
-            else if (activeBtn == Messenger)
-                activeBtn.Image = ColorizeIcon(Properties.Resources.ic_messenger_fill, activeBlue);
-            else if (activeBtn == Search)
-                activeBtn.Image = ColorizeIcon(Properties.Resources.ic_search_fill, activeBlue);
-            else if (activeBtn == Profile)
-                activeBtn.Image = ColorizeIcon(Properties.Resources.ic_profile_fill_36, activeBlue);
+            if (BamNut == Home)
+                BamNut.Image = ColorizeIcon(Properties.Resources.ic_home_fill_36, activeBlue);
+            else if (BamNut == Reels)
+                BamNut.Image = ColorizeIcon(Properties.Resources.ic_reels_fill1, activeBlue);
+            else if (BamNut == Messenger)
+                BamNut.Image = ColorizeIcon(Properties.Resources.ic_messenger_fill, activeBlue);
+            else if (BamNut == Search)
+                BamNut.Image = ColorizeIcon(Properties.Resources.ic_search_fill, activeBlue);
+            else if (BamNut == Profile)
+                BamNut.Image = ColorizeIcon(Properties.Resources.ic_profile_fill_36, activeBlue);
         }
         private Bitmap ColorizeIcon(Image original, Color targetColor)
         {
@@ -127,8 +148,48 @@ namespace NT106_GROUP10
 
         private void Home_Click(object sender, EventArgs e)
         {
-     
-     
+            if (_homeControl==null)
+            {
+                _homeControl = new HomeControl();
+            }
+            ShowPage(_homeControl);
+
+        }
+
+        private void Profile_Click(object sender, EventArgs e)
+        {
+            if (_profileControl == null)
+            {
+                _profileControl = new ProfileControl();
+            }
+            ShowPage(_profileControl);
+        }
+
+        private void Search_Click(object sender, EventArgs e)
+        {
+            if (_search == null)
+            {
+                _search = new SearchControl();
+            }
+            ShowPage(_search);
+        }
+
+        private void Messenger_Click(object sender, EventArgs e)
+        {
+            if (_messengerControl == null)
+            {
+                _messengerControl = new MessengerControl();
+            }
+            ShowPage(_messengerControl);
+        }
+
+        private void Reels_Click(object sender, EventArgs e)
+        {
+            if (_reelsControl == null)
+            {
+                _reelsControl = new ReelsControl();
+            }
+            ShowPage(_reelsControl);
         }
 
         

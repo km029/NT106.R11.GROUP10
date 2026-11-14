@@ -144,7 +144,7 @@
             this.txtRecoveryEmail.ColorPen_1 = System.Drawing.Color.Black;
             this.txtRecoveryEmail.ColorPen_2 = System.Drawing.Color.IndianRed;
             this.txtRecoveryEmail.CyberTextBoxStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            this.txtRecoveryEmail.Font = new System.Drawing.Font("Arial", 11F);
+            this.txtRecoveryEmail.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.txtRecoveryEmail.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
             this.txtRecoveryEmail.Lighting = false;
             this.txtRecoveryEmail.LinearGradientPen = false;
@@ -161,6 +161,7 @@
             this.txtRecoveryEmail.TextButton = "";
             this.txtRecoveryEmail.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             this.txtRecoveryEmail.Timer_RGB = 300;
+
             // 
             // ForgotPasswordForm
             // 

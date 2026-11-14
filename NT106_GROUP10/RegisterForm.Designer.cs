@@ -62,9 +62,9 @@
             this.lblUsername.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
             this.lblUsername.Location = new System.Drawing.Point(88, 110);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(140, 28);
+            this.lblUsername.Size = new System.Drawing.Size(152, 28);
             this.lblUsername.TabIndex = 1;
-            this.lblUsername.Text = "Tên tài khoản";
+            this.lblUsername.Text = "Tên đăng nhập";
             // 
             // lblPassword
             // 
@@ -108,9 +108,9 @@
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
             this.label1.Location = new System.Drawing.Point(88, 207);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(171, 28);
+            this.label1.Size = new System.Drawing.Size(151, 28);
             this.label1.TabIndex = 10;
-            this.label1.Text = "Email đăng nhập";
+            this.label1.Text = "Email xác thực";
             // 
             // panel1
             // 
@@ -126,7 +126,7 @@
             this.panel1.Controls.Add(this.lnkBackToLogin);
             this.panel1.Controls.Add(this.lblPassword);
             this.panel1.Controls.Add(this.lblConfirmPassword);
-            this.panel1.Location = new System.Drawing.Point(118, 34);
+            this.panel1.Location = new System.Drawing.Point(115, 46);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(557, 613);
             this.panel1.TabIndex = 12;
@@ -284,7 +284,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::NT106_GROUP10.Properties.Resources.BackgroundLogin;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(783, 671);
+            this.ClientSize = new System.Drawing.Size(776, 695);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;

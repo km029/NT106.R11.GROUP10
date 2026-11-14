@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.pnlLogin = new System.Windows.Forms.Panel();
+            this.txtPassword = new ReaLTaiizor.Controls.CyberTextBox();
             this.txtUsername = new ReaLTaiizor.Controls.CyberTextBox();
             this.btnRegister = new ReaLTaiizor.Controls.ParrotButton();
             this.btnLogin = new ReaLTaiizor.Controls.ParrotButton();
@@ -37,7 +38,6 @@
             this.lblPassword = new System.Windows.Forms.Label();
             this.lblSubtitle = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
-            this.txtPassword = new ReaLTaiizor.Controls.CyberTextBox();
             this.pnlLogin.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -58,6 +58,37 @@
             this.pnlLogin.Name = "pnlLogin";
             this.pnlLogin.Size = new System.Drawing.Size(573, 549);
             this.pnlLogin.TabIndex = 8;
+            // 
+            // txtPassword
+            // 
+            this.txtPassword.Alpha = 20;
+            this.txtPassword.BackColor = System.Drawing.Color.Transparent;
+            this.txtPassword.Background_WidthPen = 3F;
+            this.txtPassword.BackgroundPen = true;
+            this.txtPassword.ColorBackground = System.Drawing.Color.White;
+            this.txtPassword.ColorBackground_Pen = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
+            this.txtPassword.ColorLighting = System.Drawing.Color.White;
+            this.txtPassword.ColorPen_1 = System.Drawing.Color.Black;
+            this.txtPassword.ColorPen_2 = System.Drawing.Color.IndianRed;
+            this.txtPassword.CyberTextBoxStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
+            this.txtPassword.Font = new System.Drawing.Font("Arial", 11F);
+            this.txtPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
+            this.txtPassword.Lighting = false;
+            this.txtPassword.LinearGradientPen = false;
+            this.txtPassword.Location = new System.Drawing.Point(62, 290);
+            this.txtPassword.Name = "txtPassword";
+            this.txtPassword.Password = true;
+            this.txtPassword.PenWidth = 15;
+            this.txtPassword.RGB = false;
+            this.txtPassword.Rounding = true;
+            this.txtPassword.RoundingInt = 60;
+            this.txtPassword.Size = new System.Drawing.Size(438, 47);
+            this.txtPassword.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            this.txtPassword.TabIndex = 13;
+            this.txtPassword.Tag = "Cyber";
+            this.txtPassword.TextButton = "";
+            this.txtPassword.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            this.txtPassword.Timer_RGB = 300;
             // 
             // txtUsername
             // 
@@ -166,9 +197,8 @@
             this.lblUsername.Name = "lblUsername";
             this.lblUsername.Size = new System.Drawing.Size(438, 35);
             this.lblUsername.TabIndex = 5;
-            this.lblUsername.Text = "Email";
+            this.lblUsername.Text = "Tên đăng nhập";
             this.lblUsername.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-
             // 
             // lblPassword
             // 
@@ -208,37 +238,6 @@
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "CHAT APP";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // txtPassword
-            // 
-            this.txtPassword.Alpha = 20;
-            this.txtPassword.BackColor = System.Drawing.Color.Transparent;
-            this.txtPassword.Background_WidthPen = 3F;
-            this.txtPassword.BackgroundPen = true;
-            this.txtPassword.ColorBackground = System.Drawing.Color.White;
-            this.txtPassword.ColorBackground_Pen = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
-            this.txtPassword.ColorLighting = System.Drawing.Color.White;
-            this.txtPassword.ColorPen_1 = System.Drawing.Color.Black;
-            this.txtPassword.ColorPen_2 = System.Drawing.Color.IndianRed;
-            this.txtPassword.CyberTextBoxStyle = ReaLTaiizor.Enum.Cyber.StateStyle.Custom;
-            this.txtPassword.Font = new System.Drawing.Font("Arial", 11F);
-            this.txtPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
-            this.txtPassword.Lighting = false;
-            this.txtPassword.LinearGradientPen = false;
-            this.txtPassword.Location = new System.Drawing.Point(62, 290);
-            this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Password = true;
-            this.txtPassword.PenWidth = 15;
-            this.txtPassword.RGB = false;
-            this.txtPassword.Rounding = true;
-            this.txtPassword.RoundingInt = 60;
-            this.txtPassword.Size = new System.Drawing.Size(438, 47);
-            this.txtPassword.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            this.txtPassword.TabIndex = 13;
-            this.txtPassword.Tag = "Cyber";
-            this.txtPassword.TextButton = "";
-            this.txtPassword.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            this.txtPassword.Timer_RGB = 300;
             // 
             // LoginForm
             // 

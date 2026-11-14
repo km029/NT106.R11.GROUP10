@@ -66,6 +66,7 @@
             this.Content.Name = "Content";
             this.Content.Size = new System.Drawing.Size(1122, 803);
             this.Content.TabIndex = 1;
+    
             // 
             // DuongKe
             // 
@@ -98,6 +99,7 @@
             this.Search.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.Search.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.Search.UseVisualStyleBackColor = false;
+            this.Search.Click += new System.EventHandler(this.Search_Click);
             // 
             // Reels
             // 
@@ -121,6 +123,7 @@
             this.Reels.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.Reels.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.Reels.UseVisualStyleBackColor = false;
+            this.Reels.Click += new System.EventHandler(this.Reels_Click);
             // 
             // Profile
             // 
@@ -144,6 +147,7 @@
             this.Profile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.Profile.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.Profile.UseVisualStyleBackColor = false;
+            this.Profile.Click += new System.EventHandler(this.Profile_Click);
             // 
             // Messenger
             // 
@@ -167,6 +171,7 @@
             this.Messenger.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.Messenger.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.Messenger.UseVisualStyleBackColor = false;
+            this.Messenger.Click += new System.EventHandler(this.Messenger_Click);
             // 
             // Logout
             // 
