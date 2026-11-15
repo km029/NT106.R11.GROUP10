@@ -8,6 +8,8 @@ namespace NT106_GROUP10
     public partial class ResetPasswordForm : Form
     {
         private readonly string _recoveryEmail;
+        private bool dangHienMK1 = false; 
+        private bool dangHienMK2 = false;
 
         public ResetPasswordForm()
         {
@@ -128,6 +130,37 @@ namespace NT106_GROUP10
                 btnResetPassword.Enabled = true;
                 btnResetPassword.ButtonText = originalText;
                 this.Cursor = Cursors.Default;
+            }
+        }
+
+        private void HienThiMK1_Click(object sender, EventArgs e)
+        {
+            dangHienMK1 = !dangHienMK1;
+            if (dangHienMK1 == false)
+            {
+                txtNewPassword.Password = true;
+                HienThiMK1.Image = Properties.Resources.ic_closed_eye_25;
+            }
+            else
+            {
+                txtNewPassword.Password = false;
+
+                HienThiMK1.Image = Properties.Resources.ic_eye_25;
+            }
+        }
+
+        private void HienThiMK_Click(object sender, EventArgs e)
+        {
+            dangHienMK2 = !dangHienMK2;
+            if (dangHienMK2 == false)
+            {
+                txtConfirmNewPassword.Password = true;
+                HienThiMK.Image = Properties.Resources.ic_closed_eye_25;
+            }
+            else
+            {
+                txtConfirmNewPassword.Password = false;
+                HienThiMK.Image = Properties.Resources.ic_eye_25;
             }
         }
     }

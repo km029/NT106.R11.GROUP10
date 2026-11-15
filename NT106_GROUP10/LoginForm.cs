@@ -7,6 +7,7 @@ namespace NT106_GROUP10
 {
     public partial class LoginForm : Form
     {
+        private bool dangHienMatKhau = false;
         public LoginForm()
         {
             InitializeComponent();
@@ -100,5 +101,23 @@ namespace NT106_GROUP10
                 form.ShowDialog(this);
             }
         }
+
+        private void HienThiMK_Click(object sender, EventArgs e)
+        {
+            dangHienMatKhau = !dangHienMatKhau;
+            if (dangHienMatKhau == false )
+            {
+                txtPassword.Password = true;
+                HienThiMK.Image = Properties.Resources.ic_closed_eye_25;
+            }
+            else
+            {
+                txtPassword.Password = false;
+                
+                HienThiMK.Image = Properties.Resources.ic_eye_25;
+            }
+        }
+
+        
     }
 }

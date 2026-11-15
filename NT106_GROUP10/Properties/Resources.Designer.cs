@@ -73,6 +73,26 @@ namespace NT106_GROUP10.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ic_closed_eye_25 {
+            get {
+                object obj = ResourceManager.GetObject("ic_closed_eye_25", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ic_eye_25 {
+            get {
+                object obj = ResourceManager.GetObject("ic_eye_25", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ic_home_fill_36 {
             get {
                 object obj = ResourceManager.GetObject("ic_home_fill_36", resourceCulture);

@@ -40,7 +40,11 @@
             this.txtRegPassword = new ReaLTaiizor.Controls.CyberTextBox();
             this.txtRegEmail = new ReaLTaiizor.Controls.CyberTextBox();
             this.txtRegUsername = new ReaLTaiizor.Controls.CyberTextBox();
+            this.HienThiMK1 = new System.Windows.Forms.PictureBox();
+            this.HienThiMK = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.HienThiMK1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.HienThiMK)).BeginInit();
             this.SuspendLayout();
             // 
             // lblTitle
@@ -50,7 +54,7 @@
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
             this.lblTitle.Location = new System.Drawing.Point(149, 28);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(263, 32);
+            this.lblTitle.Size = new System.Drawing.Size(324, 41);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "ĐĂNG KÝ TÀI KHOẢN";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -62,7 +66,7 @@
             this.lblUsername.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
             this.lblUsername.Location = new System.Drawing.Point(88, 110);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(123, 21);
+            this.lblUsername.Size = new System.Drawing.Size(152, 28);
             this.lblUsername.TabIndex = 1;
             this.lblUsername.Text = "Tên đăng nhập";
             // 
@@ -73,7 +77,7 @@
             this.lblPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
             this.lblPassword.Location = new System.Drawing.Point(88, 306);
             this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(82, 21);
+            this.lblPassword.Size = new System.Drawing.Size(102, 28);
             this.lblPassword.TabIndex = 4;
             this.lblPassword.Text = "Mật khẩu";
             // 
@@ -84,7 +88,7 @@
             this.lblConfirmPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
             this.lblConfirmPassword.Location = new System.Drawing.Point(88, 404);
             this.lblConfirmPassword.Name = "lblConfirmPassword";
-            this.lblConfirmPassword.Size = new System.Drawing.Size(156, 21);
+            this.lblConfirmPassword.Size = new System.Drawing.Size(194, 28);
             this.lblConfirmPassword.TabIndex = 5;
             this.lblConfirmPassword.Text = "Xác nhận mật khẩu";
             // 
@@ -96,7 +100,7 @@
             this.lnkBackToLogin.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
             this.lnkBackToLogin.Location = new System.Drawing.Point(284, 570);
             this.lnkBackToLogin.Name = "lnkBackToLogin";
-            this.lnkBackToLogin.Size = new System.Drawing.Size(145, 19);
+            this.lnkBackToLogin.Size = new System.Drawing.Size(180, 23);
             this.lnkBackToLogin.TabIndex = 8;
             this.lnkBackToLogin.Text = "← Quay lại đăng nhập";
             this.lnkBackToLogin.Click += new System.EventHandler(this.lnkBackToLogin_Click);
@@ -108,13 +112,16 @@
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(149)))), ((int)(((byte)(246)))));
             this.label1.Location = new System.Drawing.Point(88, 207);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(122, 21);
+            this.label1.Size = new System.Drawing.Size(151, 28);
             this.label1.TabIndex = 10;
             this.label1.Text = "Email xác thực";
             // 
             // panel1
             // 
             this.panel1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.panel1.BackColor = System.Drawing.Color.AliceBlue;
+            this.panel1.Controls.Add(this.HienThiMK);
+            this.panel1.Controls.Add(this.HienThiMK1);
             this.panel1.Controls.Add(this.btnDoRegister);
             this.panel1.Controls.Add(this.txtConfirmPassword);
             this.panel1.Controls.Add(this.txtRegPassword);
@@ -282,9 +289,37 @@
             this.txtRegUsername.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             this.txtRegUsername.Timer_RGB = 300;
             // 
+            // HienThiMK1
+            // 
+            this.HienThiMK1.BackColor = System.Drawing.Color.White;
+            this.HienThiMK1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.HienThiMK1.ErrorImage = null;
+            this.HienThiMK1.Image = global::NT106_GROUP10.Properties.Resources.ic_closed_eye_25;
+            this.HienThiMK1.Location = new System.Drawing.Point(423, 351);
+            this.HienThiMK1.Name = "HienThiMK1";
+            this.HienThiMK1.Size = new System.Drawing.Size(25, 25);
+            this.HienThiMK1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.HienThiMK1.TabIndex = 20;
+            this.HienThiMK1.TabStop = false;
+            this.HienThiMK1.Click += new System.EventHandler(this.HienThiMK1_Click);
+            // 
+            // HienThiMK
+            // 
+            this.HienThiMK.BackColor = System.Drawing.Color.White;
+            this.HienThiMK.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.HienThiMK.ErrorImage = null;
+            this.HienThiMK.Image = global::NT106_GROUP10.Properties.Resources.ic_closed_eye_25;
+            this.HienThiMK.Location = new System.Drawing.Point(423, 449);
+            this.HienThiMK.Name = "HienThiMK";
+            this.HienThiMK.Size = new System.Drawing.Size(25, 25);
+            this.HienThiMK.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.HienThiMK.TabIndex = 21;
+            this.HienThiMK.TabStop = false;
+            this.HienThiMK.Click += new System.EventHandler(this.HienThiMK_Click);
+            // 
             // RegisterForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::NT106_GROUP10.Properties.Resources.BackgroundLogin;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
@@ -299,6 +334,8 @@
             this.Text = "Đăng ký tài khoản";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.HienThiMK1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.HienThiMK)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -317,5 +354,7 @@
         private ReaLTaiizor.Controls.CyberTextBox txtConfirmPassword;
         private ReaLTaiizor.Controls.CyberTextBox txtRegPassword;
         private ReaLTaiizor.Controls.ParrotButton btnDoRegister;
+        private System.Windows.Forms.PictureBox HienThiMK1;
+        private System.Windows.Forms.PictureBox HienThiMK;
     }
 }

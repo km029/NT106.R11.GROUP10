@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.pnlLogin = new System.Windows.Forms.Panel();
+            this.HienThiMK = new System.Windows.Forms.PictureBox();
             this.txtPassword = new ReaLTaiizor.Controls.CyberTextBox();
             this.txtUsername = new ReaLTaiizor.Controls.CyberTextBox();
             this.btnRegister = new ReaLTaiizor.Controls.ParrotButton();
@@ -39,13 +40,15 @@
             this.lblSubtitle = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
             this.pnlLogin.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.HienThiMK)).BeginInit();
             this.SuspendLayout();
             // 
             // pnlLogin
             // 
             this.pnlLogin.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.pnlLogin.BackColor = System.Drawing.SystemColors.Control;
+            this.pnlLogin.BackColor = System.Drawing.Color.AliceBlue;
             this.pnlLogin.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.pnlLogin.Controls.Add(this.HienThiMK);
             this.pnlLogin.Controls.Add(this.txtPassword);
             this.pnlLogin.Controls.Add(this.txtUsername);
             this.pnlLogin.Controls.Add(this.btnRegister);
@@ -59,6 +62,20 @@
             this.pnlLogin.Name = "pnlLogin";
             this.pnlLogin.Size = new System.Drawing.Size(573, 549);
             this.pnlLogin.TabIndex = 8;
+            // 
+            // HienThiMK
+            // 
+            this.HienThiMK.BackColor = System.Drawing.Color.White;
+            this.HienThiMK.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.HienThiMK.ErrorImage = null;
+            this.HienThiMK.Image = global::NT106_GROUP10.Properties.Resources.ic_closed_eye_25;
+            this.HienThiMK.Location = new System.Drawing.Point(463, 301);
+            this.HienThiMK.Name = "HienThiMK";
+            this.HienThiMK.Size = new System.Drawing.Size(25, 25);
+            this.HienThiMK.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.HienThiMK.TabIndex = 14;
+            this.HienThiMK.TabStop = false;
+            this.HienThiMK.Click += new System.EventHandler(this.HienThiMK_Click);
             // 
             // txtPassword
             // 
@@ -91,6 +108,7 @@
             this.txtPassword.TextButton = "";
             this.txtPassword.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             this.txtPassword.Timer_RGB = 300;
+
             // 
             // txtUsername
             // 
@@ -244,7 +262,7 @@
             // 
             // LoginForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 23F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.BackgroundImage = global::NT106_GROUP10.Properties.Resources.BackgroundLogin;
@@ -258,6 +276,7 @@
             this.Text = "Đăng nhập - Chat App";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.pnlLogin.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.HienThiMK)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -273,6 +292,7 @@
         private ReaLTaiizor.Controls.ParrotButton btnRegister;
         private ReaLTaiizor.Controls.CyberTextBox txtUsername;
         private ReaLTaiizor.Controls.CyberTextBox txtPassword;
+        private System.Windows.Forms.PictureBox HienThiMK;
     }
 }
 
