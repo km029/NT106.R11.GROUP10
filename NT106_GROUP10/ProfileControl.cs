@@ -46,6 +46,65 @@ namespace NT106_GROUP10
             Card.Top = Math.Max(0, (this.ClientSize.Height - Card.Height) / 2);
         }
 
+        private void Card_Paint(object sender, PaintEventArgs e)
+        {
 
+        }
+
+        private void btnTabInfo_Click(object sender, EventArgs e)
+        {
+            pnlIndicator.Width = btnTabInfo.Width;
+            pnlIndicator.Left = btnTabInfo.Left;
+
+            flpContent.Controls.Clear();
+
+            // Khai báo danh sách thông tin chuẩn chỉnh từng dòng
+            string[,] infos = new string[,]
+            {
+        { "📧 Email đăng nhập", UserSession.Email },
+        { "🆔 Mã định danh (UID)", UserSession.UserId },
+        { "👤 Tên hiển thị", string.IsNullOrEmpty(UserSession.DisplayName) ? "Chưa cập nhật" : UserSession.DisplayName },
+        { "🎯 Trạng thái tài khoản", "Đang hoạt động trên Supabase" }
+            };
+
+            for (int i = 0; i < infos.GetLength(0); i++)
+            {
+                Panel pnlItem = new Panel();
+                // Lấy theo chiều rộng của thẻ Card lớn bọc bên ngoài thay vì lấy flpContent đang bị bóp nhỏ
+                pnlItem.Width = Card.Width - 60;
+                pnlItem.Height = 60;
+                pnlItem.BackColor = Color.FromArgb(245, 247, 250);
+                pnlItem.Margin = new Padding(10, 5, 10, 5);
+
+                Label lblTitle = new Label();
+                lblTitle.Text = infos[i, 0];
+                lblTitle.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+                lblTitle.ForeColor = Color.FromArgb(90, 105, 120);
+                lblTitle.Location = new Point(15, 10);
+                lblTitle.AutoSize = true;
+
+                Label lblValue = new Label();
+                lblValue.Text = infos[i, 1];
+                lblValue.Font = new Font("Segoe UI", 10.5F, FontStyle.Regular);
+                lblValue.ForeColor = Color.FromArgb(30, 40, 50);
+                lblValue.Location = new Point(15, 32);
+                lblValue.AutoSize = true;
+
+                pnlItem.Controls.Add(lblTitle);
+                pnlItem.Controls.Add(lblValue);
+                flpContent.Controls.Add(pnlItem);
+            }
+        }
+
+        private void btnTabFriends_Click(object sender, EventArgs e)
+        {
+            pnlIndicator.Width = btnTabFriends.Width;
+            pnlIndicator.Left = btnTabFriends.Left;
+        }
+
+        private void pnlIndicator_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

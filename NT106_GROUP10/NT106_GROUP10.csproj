@@ -245,6 +245,7 @@
     </Compile>
     <Compile Include="SupabaseAuthService.cs" />
     <Compile Include="SupabaseConfig.cs" />
+    <Compile Include="UserSession.cs" />
     <EmbeddedResource Include="ForgotPasswordForm.resx">
       <DependentUpon>ForgotPasswordForm.cs</DependentUpon>
     </EmbeddedResource>

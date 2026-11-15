@@ -40,20 +40,23 @@ namespace NT106_GROUP10
             string email = txtUsername.TextButton.Trim();
             string password = txtPassword.TextButton;
 
-            if (string.IsNullOrWhiteSpace(email) ||
-                string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
-                MessageBox.Show("Vui lòng nhập tài khoản (username hoặc email) và mật khẩu!");
+                MessageBox.Show("Vui lòng nhập tài khoản và mật khẩu!");
                 return;
             }
 
             btnLogin.Enabled = false;
             btnLogin.ButtonText = "Đang đăng nhập...";
             this.Cursor = Cursors.WaitCursor;
-
             try
             {
                 await SupabaseAuthService.SignInAsync(email, password);
+                
+                UserSession.Email = email;
+                UserSession.DisplayName = email.Split('@')[0];
+                UserSession.UserId = "UID_" + email; 
+
                 MainForm mainForm = new MainForm();
                 mainForm.Show();
                 this.Hide();
@@ -62,19 +65,11 @@ namespace NT106_GROUP10
             {
                 if (ex.Message == "ACCOUNT_NOT_FOUND")
                 {
-                    MessageBox.Show(
-                        "Tài khoản chưa tồn tại, vui lòng đăng ký.",
-                        "Chưa có tài khoản",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
+                    MessageBox.Show("Tài khoản chưa tồn tại, vui lòng đăng ký.", "Chưa có tài khoản", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 else
                 {
-                    MessageBox.Show(
-                        "Sai mật khẩu hoặc tài khoản.",
-                        "Đăng nhập chưa thành công",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
+                    MessageBox.Show("Sai mật khẩu hoặc tài khoản.", "Đăng nhập chưa thành công", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 txtPassword.TextButton = "";
