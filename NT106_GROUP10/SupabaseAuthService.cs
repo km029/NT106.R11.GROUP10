@@ -1,6 +1,8 @@
-﻿using System;
+﻿
+using System;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -12,59 +14,85 @@ namespace NT106_GROUP10
     {
         private static readonly HttpClient Http = new HttpClient
         {
-            Timeout = TimeSpan.FromSeconds(20)
+            Timeout = TimeSpan.FromSeconds(30)
         };
 
         internal static string AccessToken { get; private set; }
         internal static string RefreshToken { get; private set; }
         internal static string CurrentUserId { get; private set; }
 
-        // Hàm dùng chung kiểm tra mật khẩu: >= 8 ký tự, hoa, thường, số, ký tự đặc biệt
+        // Email thật lấy trực tiếp từ Supabase Auth.
+        internal static string CurrentUserEmail { get; private set; }
+
+        private static string BaseUrl
+        {
+            get { return SupabaseConfig.ProjectUrl.TrimEnd('/'); }
+        }
+
+        private static HttpRequestMessage CreateRequest(
+            HttpMethod method, string url, bool useUserToken = false)
+        {
+            HttpRequestMessage request =
+                new HttpRequestMessage(method, url);
+
+            request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
+
+            string token = useUserToken && !string.IsNullOrWhiteSpace(AccessToken)
+                ? AccessToken
+                : SupabaseConfig.PublishableKey;
+
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            return request;
+        }
+
         internal static bool IsValidPassword(string password)
         {
             if (string.IsNullOrEmpty(password)) return false;
 
-            bool hasMinLength = password.Length >= 8;
-            bool hasUpper = password.Any(char.IsUpper);
-            bool hasLower = password.Any(char.IsLower);
-            bool hasDigit = password.Any(char.IsDigit);
-            bool hasSpecial = password.Any(ch => !char.IsLetterOrDigit(ch) && !char.IsWhiteSpace(ch));
-
-            return hasMinLength && hasUpper && hasLower && hasDigit && hasSpecial;
+            return password.Length >= 8
+                && password.Any(char.IsUpper)
+                && password.Any(char.IsLower)
+                && password.Any(char.IsDigit)
+                && password.Any(ch =>
+                    !char.IsLetterOrDigit(ch) && !char.IsWhiteSpace(ch));
         }
 
-        internal static async Task<bool> AccountExistsAsync(string usernameOrEmail)
+        internal static async Task<bool> AccountExistsAsync(
+            string usernameOrEmail)
         {
-            string url = SupabaseConfig.ProjectUrl.TrimEnd('/')
-                         + "/rest/v1/rpc/check_account_exists";
+            string url = BaseUrl + "/rest/v1/rpc/check_account_exists";
 
             string json = JsonConvert.SerializeObject(new
             {
                 p_input = usernameOrEmail.Trim()
             });
 
-            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            using (var request = CreateRequest(HttpMethod.Post, url))
             {
-                request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
-                request.Headers.Add("Authorization", "Bearer " + SupabaseConfig.PublishableKey);
                 request.Content = new StringContent(
                     json, Encoding.UTF8, "application/json");
 
-                using (HttpResponseMessage response = await Http.SendAsync(request))
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
                 {
-                    if (!response.IsSuccessStatusCode)
-                        return false;
-
                     string body = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                        throw new Exception(
+                            "Không kiểm tra được tài khoản: " + body);
+
                     return JsonConvert.DeserializeObject<bool>(body);
                 }
             }
         }
 
-        internal static async Task<string> CheckDuplicateAsync(string username, string email)
+        internal static async Task<string> CheckDuplicateAsync(
+            string username, string email)
         {
-            string url = SupabaseConfig.ProjectUrl.TrimEnd('/')
-                         + "/rest/v1/rpc/check_registration_duplicate";
+            string url = BaseUrl
+                + "/rest/v1/rpc/check_registration_duplicate";
 
             string json = JsonConvert.SerializeObject(new
             {
@@ -72,19 +100,20 @@ namespace NT106_GROUP10
                 p_email = email
             });
 
-            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            using (var request = CreateRequest(HttpMethod.Post, url))
             {
-                request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
-                request.Headers.Add("Authorization", "Bearer " + SupabaseConfig.PublishableKey);
                 request.Content = new StringContent(
                     json, Encoding.UTF8, "application/json");
 
-                using (HttpResponseMessage response = await Http.SendAsync(request))
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
                 {
-                    if (!response.IsSuccessStatusCode)
-                        return "OK";
-
                     string body = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                        throw new Exception(
+                            "Không kiểm tra được dữ liệu đăng ký: " + body);
+
                     return JsonConvert.DeserializeObject<string>(body);
                 }
             }
@@ -93,8 +122,7 @@ namespace NT106_GROUP10
         internal static async Task SignUpAsync(
             string username, string email, string password)
         {
-            string url = SupabaseConfig.ProjectUrl.TrimEnd('/')
-                         + "/auth/v1/signup";
+            string url = BaseUrl + "/auth/v1/signup";
 
             string json = JsonConvert.SerializeObject(new
             {
@@ -103,42 +131,43 @@ namespace NT106_GROUP10
                 data = new { username = username }
             });
 
-            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            using (var request = new HttpRequestMessage(
+                HttpMethod.Post, url))
             {
                 request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
                 request.Content = new StringContent(
                     json, Encoding.UTF8, "application/json");
 
-                using (HttpResponseMessage response = await Http.SendAsync(request))
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
                 {
+                    string body = await response.Content.ReadAsStringAsync();
+
                     if (!response.IsSuccessStatusCode)
-                    {
-                        string errorBody = await response.Content.ReadAsStringAsync();
                         throw new Exception(
-                            "Supabase trả về HTTP " + (int)response.StatusCode + ": " + errorBody);
-                    }
+                            "Supabase trả về HTTP "
+                            + (int)response.StatusCode + ": " + body);
                 }
             }
         }
 
-        private static async Task<string> GetEmailByUsernameAsync(string username)
+        private static async Task<string> GetEmailByUsernameAsync(
+            string username)
         {
-            string url = SupabaseConfig.ProjectUrl.TrimEnd('/')
-                         + "/rest/v1/rpc/get_email_by_username";
+            string url = BaseUrl + "/rest/v1/rpc/get_email_by_username";
 
             string json = JsonConvert.SerializeObject(new
             {
                 p_username = username
             });
 
-            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            using (var request = CreateRequest(HttpMethod.Post, url))
             {
-                request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
-                request.Headers.Add("Authorization", "Bearer " + SupabaseConfig.PublishableKey);
                 request.Content = new StringContent(
                     json, Encoding.UTF8, "application/json");
 
-                using (HttpResponseMessage response = await Http.SendAsync(request))
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
                 {
                     if (!response.IsSuccessStatusCode)
                         return null;
@@ -149,31 +178,27 @@ namespace NT106_GROUP10
             }
         }
 
-        internal static async Task SignInAsync(string usernameOrEmail, string password)
+        internal static async Task SignInAsync(
+            string usernameOrEmail, string password)
         {
             string input = usernameOrEmail.Trim();
 
-            // 1. Kiểm tra tài khoản (username hoặc email) đã tồn tại chưa
             bool exists = await AccountExistsAsync(input);
-            if (!exists)
-            {
-                throw new InvalidOperationException("ACCOUNT_NOT_FOUND");
-            }
 
-            // 2. Nếu là username thì quy đổi sang email
+            if (!exists)
+                throw new InvalidOperationException("ACCOUNT_NOT_FOUND");
+
             string emailToLogin = input;
+
             if (!emailToLogin.Contains("@"))
             {
                 emailToLogin = await GetEmailByUsernameAsync(emailToLogin);
+
                 if (string.IsNullOrWhiteSpace(emailToLogin))
-                {
                     throw new InvalidOperationException("ACCOUNT_NOT_FOUND");
-                }
             }
 
-            // 3. Tiến hành đăng nhập
-            string url = SupabaseConfig.ProjectUrl.TrimEnd('/')
-                         + "/auth/v1/token?grant_type=password";
+            string url = BaseUrl + "/auth/v1/token?grant_type=password";
 
             string json = JsonConvert.SerializeObject(new
             {
@@ -181,88 +206,249 @@ namespace NT106_GROUP10
                 password = password
             });
 
-            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            using (var request = new HttpRequestMessage(
+                HttpMethod.Post, url))
             {
                 request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
                 request.Content = new StringContent(
                     json, Encoding.UTF8, "application/json");
 
-                using (HttpResponseMessage response = await Http.SendAsync(request))
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
                 {
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new InvalidOperationException("WRONG_CREDENTIALS");
-                    }
-
                     string body = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                        throw new InvalidOperationException(
+                            "WRONG_CREDENTIALS");
+
                     JObject result = JObject.Parse(body);
 
-                    string accessToken = (string)result["access_token"];
-                    string refreshToken = (string)result["refresh_token"];
-
-                    if (string.IsNullOrEmpty(accessToken))
-                    {
-                        throw new InvalidOperationException("WRONG_CREDENTIALS");
-                    }
-
-                    AccessToken = accessToken;
-                    RefreshToken = refreshToken;
+                    AccessToken = (string)result["access_token"];
+                    RefreshToken = (string)result["refresh_token"];
                     CurrentUserId = (string)result["user"]?["id"];
+
+                    // Email lấy từ Auth, không lấy từ profiles.
+                    CurrentUserEmail = (string)result["user"]?["email"];
+
+                    if (string.IsNullOrWhiteSpace(AccessToken) ||
+                        string.IsNullOrWhiteSpace(CurrentUserId) ||
+                        string.IsNullOrWhiteSpace(CurrentUserEmail))
+                    {
+                        throw new Exception(
+                            "Supabase không trả về đủ thông tin tài khoản.");
+                    }
 
                     await UpdateUserPresenceAsync("online");
                 }
             }
         }
 
-        internal static async Task UpdateUserPresenceAsync(string status)
+        internal static async Task<JObject> GetCurrentProfileAsync()
         {
-            if (string.IsNullOrEmpty(AccessToken) || string.IsNullOrEmpty(CurrentUserId))
-                return;
-
-            try
+            if (string.IsNullOrWhiteSpace(CurrentUserId) ||
+                string.IsNullOrWhiteSpace(AccessToken))
             {
-                string url = SupabaseConfig.ProjectUrl.TrimEnd('/')
-                             + "/rest/v1/profiles?id=eq." + CurrentUserId;
+                throw new InvalidOperationException("Bạn chưa đăng nhập.");
+            }
 
-                string json = JsonConvert.SerializeObject(new
+            string url = BaseUrl
+                + "/rest/v1/profiles?id=eq."
+                + Uri.EscapeDataString(CurrentUserId)
+                + "&select=id,username,email,display_name,avatar_url,bio,status";
+
+            using (var request = CreateRequest(HttpMethod.Get, url, true))
+            using (HttpResponseMessage response =
+                await Http.SendAsync(request))
+            {
+                string body = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                    throw new Exception("Không lấy được hồ sơ: " + body);
+
+                JArray rows = JArray.Parse(body);
+
+                if (rows.Count == 0)
+                    throw new Exception(
+                        "Không tìm thấy hồ sơ trong bảng profiles.");
+
+                return (JObject)rows[0];
+            }
+        }
+
+        internal static async Task UpdateDisplayNameAsync(string displayName)
+        {
+            string url = BaseUrl
+                + "/rest/v1/profiles?id=eq."
+                + Uri.EscapeDataString(CurrentUserId);
+
+            string json = JsonConvert.SerializeObject(new
+            {
+                display_name = displayName
+            });
+
+            using (var request = CreateRequest(
+                new HttpMethod("PATCH"), url, true))
+            {
+                request.Content = new StringContent(
+                    json, Encoding.UTF8, "application/json");
+
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
                 {
-                    status = status,
-                    last_seen_at = DateTime.UtcNow.ToString("o")
-                });
+                    string body = await response.Content.ReadAsStringAsync();
 
-                using (var request = new HttpRequestMessage(new HttpMethod("PATCH"), url))
-                {
-                    request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
-                    request.Headers.Add("Authorization", "Bearer " + AccessToken);
-                    request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    await Http.SendAsync(request);
+                    if (!response.IsSuccessStatusCode)
+                        throw new Exception(
+                            "Không cập nhật được tên hiển thị: " + body);
                 }
             }
-            catch { }
+        }
+
+        internal static async Task<string> UploadAvatarAsync(
+            byte[] imageBytes, string extension, string contentType)
+        {
+            if (string.IsNullOrWhiteSpace(CurrentUserId) ||
+                string.IsNullOrWhiteSpace(AccessToken))
+            {
+                throw new InvalidOperationException("Bạn chưa đăng nhập.");
+            }
+
+            string safeExtension = (extension ?? ".jpg").ToLowerInvariant();
+
+            if (safeExtension != ".jpg" &&
+                safeExtension != ".jpeg" &&
+                safeExtension != ".png" &&
+                safeExtension != ".bmp")
+            {
+                safeExtension = ".jpg";
+            }
+
+            // Tên file mới để không cần quyền ghi đè file cũ.
+            string fileName = Guid.NewGuid().ToString("N") + safeExtension;
+            string objectPath = CurrentUserId + "/" + fileName;
+
+            string url = BaseUrl
+                + "/storage/v1/object/avatars/"
+                + Uri.EscapeDataString(CurrentUserId)
+                + "/" + Uri.EscapeDataString(fileName);
+
+            using (var request = CreateRequest(HttpMethod.Post, url, true))
+            {
+                request.Headers.Add("x-upsert", "false");
+                request.Content = new ByteArrayContent(imageBytes);
+                request.Content.Headers.ContentType =
+                    new MediaTypeHeaderValue(contentType);
+
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
+                {
+                    string body = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                        throw new Exception(
+                            "Không tải được ảnh lên Supabase Storage: " + body);
+                }
+            }
+
+            string publicUrl = BaseUrl
+                + "/storage/v1/object/public/avatars/"
+                + Uri.EscapeDataString(CurrentUserId)
+                + "/" + Uri.EscapeDataString(fileName);
+
+            await UpdateAvatarUrlAsync(publicUrl);
+
+            return publicUrl;
+        }
+
+        private static async Task UpdateAvatarUrlAsync(string avatarUrl)
+        {
+            string url = BaseUrl
+                + "/rest/v1/profiles?id=eq."
+                + Uri.EscapeDataString(CurrentUserId);
+
+            string json = JsonConvert.SerializeObject(new
+            {
+                avatar_url = avatarUrl
+            });
+
+            using (var request = CreateRequest(
+                new HttpMethod("PATCH"), url, true))
+            {
+                request.Content = new StringContent(
+                    json, Encoding.UTF8, "application/json");
+
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
+                {
+                    string body = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                        throw new Exception(
+                            "Đã tải ảnh lên nhưng không lưu được đường dẫn ảnh: "
+                            + body);
+                }
+            }
+        }
+
+        internal static async Task UpdateUserPresenceAsync(string status)
+        {
+            if (string.IsNullOrWhiteSpace(AccessToken) ||
+                string.IsNullOrWhiteSpace(CurrentUserId))
+                return;
+
+            string url = BaseUrl
+                + "/rest/v1/profiles?id=eq."
+                + Uri.EscapeDataString(CurrentUserId);
+
+            string json = JsonConvert.SerializeObject(new
+            {
+                status = status,
+                last_seen_at = DateTime.UtcNow.ToString("o")
+            });
+
+            using (var request = CreateRequest(
+                new HttpMethod("PATCH"), url, true))
+            {
+                request.Content = new StringContent(
+                    json, Encoding.UTF8, "application/json");
+
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        string body = await response.Content.ReadAsStringAsync();
+                        throw new Exception(
+                            "Không cập nhật được trạng thái: " + body);
+                    }
+                }
+            }
         }
 
         internal static async Task SendPasswordResetAsync(string email)
         {
-            string url = SupabaseConfig.ProjectUrl.TrimEnd('/')
-                         + "/auth/v1/recover";
+            string url = BaseUrl + "/auth/v1/recover";
 
-            string json = JsonConvert.SerializeObject(new { email = email });
+            string json = JsonConvert.SerializeObject(new
+            {
+                email = email
+            });
 
-            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            using (var request = new HttpRequestMessage(
+                HttpMethod.Post, url))
             {
                 request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
                 request.Content = new StringContent(
                     json, Encoding.UTF8, "application/json");
 
-                using (HttpResponseMessage response = await Http.SendAsync(request))
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
                 {
                     if (!response.IsSuccessStatusCode)
-                    {
                         throw new InvalidOperationException(
                             "Không gửi được yêu cầu khôi phục (HTTP "
                             + (int)response.StatusCode + ").");
-                    }
                 }
             }
         }
@@ -270,8 +456,6 @@ namespace NT106_GROUP10
         internal static async Task ResetPasswordAsync(
             string email, string code, string newPassword)
         {
-            string baseUrl = SupabaseConfig.ProjectUrl.TrimEnd('/');
-
             string verifyJson = JsonConvert.SerializeObject(new
             {
                 email = email,
@@ -282,30 +466,27 @@ namespace NT106_GROUP10
             string recoveryAccessToken;
 
             using (var request = new HttpRequestMessage(
-                HttpMethod.Post, baseUrl + "/auth/v1/verify"))
+                HttpMethod.Post, BaseUrl + "/auth/v1/verify"))
             {
                 request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
                 request.Content = new StringContent(
                     verifyJson, Encoding.UTF8, "application/json");
 
-                using (HttpResponseMessage response = await Http.SendAsync(request))
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
                 {
                     if (!response.IsSuccessStatusCode)
-                    {
                         throw new InvalidOperationException(
                             "Mã khôi phục không hợp lệ hoặc đã hết hạn (HTTP "
                             + (int)response.StatusCode + ").");
-                    }
 
                     string body = await response.Content.ReadAsStringAsync();
                     JObject result = JObject.Parse(body);
                     recoveryAccessToken = (string)result["access_token"];
 
                     if (string.IsNullOrWhiteSpace(recoveryAccessToken))
-                    {
                         throw new InvalidOperationException(
-                            "Đã xác minh mã nhưng không nhận được phiên khôi phục.");
-                    }
+                            "Không nhận được phiên khôi phục.");
                 }
             }
 
@@ -315,27 +496,46 @@ namespace NT106_GROUP10
             });
 
             using (var request = new HttpRequestMessage(
-                HttpMethod.Put, baseUrl + "/auth/v1/user"))
+                HttpMethod.Put, BaseUrl + "/auth/v1/user"))
             {
                 request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
                 request.Headers.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue(
+                    new AuthenticationHeaderValue(
                         "Bearer", recoveryAccessToken);
 
                 request.Content = new StringContent(
                     updateJson, Encoding.UTF8, "application/json");
 
-                using (HttpResponseMessage response = await Http.SendAsync(request))
+                using (HttpResponseMessage response =
+                    await Http.SendAsync(request))
                 {
                     if (!response.IsSuccessStatusCode)
-                    {
                         throw new InvalidOperationException(
-                            "Mã đã được xác minh nhưng chưa đổi được mật khẩu (HTTP "
-                            + (int)response.StatusCode
-                            + "). Có thể bạn cần yêu cầu mã mới để thử lại.");
-                    }
+                            "Chưa đổi được mật khẩu (HTTP "
+                            + (int)response.StatusCode + ").");
                 }
             }
+        }
+
+        internal static async Task SignOutAsync()
+        {
+            if (!string.IsNullOrWhiteSpace(AccessToken))
+            {
+                try
+                {
+                    using (var request = CreateRequest(
+                        HttpMethod.Post, BaseUrl + "/auth/v1/logout", true))
+                    {
+                        await Http.SendAsync(request);
+                    }
+                }
+                catch { }
+            }
+
+            AccessToken = null;
+            RefreshToken = null;
+            CurrentUserId = null;
+            CurrentUserEmail = null;
         }
     }
 }

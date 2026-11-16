@@ -1,5 +1,4 @@
-﻿
-namespace NT106_GROUP10
+﻿namespace NT106_GROUP10
 {
     partial class ProfileControl
     {
@@ -7,7 +6,7 @@ namespace NT106_GROUP10
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null)
+            if (disposing && (components != null))
                 components.Dispose();
 
             base.Dispose(disposing);
@@ -58,9 +57,9 @@ namespace NT106_GROUP10
             // 
             // flpFriends
             // 
-            this.flpFriends.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.flpFriends.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
+                System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) |
+                System.Windows.Forms.AnchorStyles.Right)));
             this.flpFriends.AutoScroll = true;
             this.flpFriends.BackColor = System.Drawing.Color.White;
             this.flpFriends.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
@@ -73,9 +72,10 @@ namespace NT106_GROUP10
             // 
             // flpContent
             // 
-            this.flpContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.flpContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
+                System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) |
+                System.Windows.Forms.AnchorStyles.Right)));
+            this.flpContent.AutoScroll = true;
             this.flpContent.BackColor = System.Drawing.Color.White;
             this.flpContent.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flpContent.Location = new System.Drawing.Point(34, 370);
@@ -87,7 +87,7 @@ namespace NT106_GROUP10
             // 
             // pnlIndicator
             // 
-            this.pnlIndicator.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(116)))), ((int)(((byte)(235)))));
+            this.pnlIndicator.BackColor = System.Drawing.Color.FromArgb(48, 116, 235);
             this.pnlIndicator.Location = new System.Drawing.Point(34, 356);
             this.pnlIndicator.Name = "pnlIndicator";
             this.pnlIndicator.Size = new System.Drawing.Size(453, 4);
@@ -99,7 +99,7 @@ namespace NT106_GROUP10
             this.btnTabFriends.FlatAppearance.BorderSize = 0;
             this.btnTabFriends.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnTabFriends.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnTabFriends.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this.btnTabFriends.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
             this.btnTabFriends.Location = new System.Drawing.Point(489, 300);
             this.btnTabFriends.Name = "btnTabFriends";
             this.btnTabFriends.Size = new System.Drawing.Size(445, 60);
@@ -114,7 +114,7 @@ namespace NT106_GROUP10
             this.btnTabInfo.FlatAppearance.BorderSize = 0;
             this.btnTabInfo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnTabInfo.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnTabInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(116)))), ((int)(((byte)(235)))));
+            this.btnTabInfo.ForeColor = System.Drawing.Color.FromArgb(48, 116, 235);
             this.btnTabInfo.Location = new System.Drawing.Point(34, 300);
             this.btnTabInfo.Name = "btnTabInfo";
             this.btnTabInfo.Size = new System.Drawing.Size(453, 60);
@@ -125,7 +125,7 @@ namespace NT106_GROUP10
             // 
             // linePhanCach
             // 
-            this.linePhanCach.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(234)))), ((int)(((byte)(242)))));
+            this.linePhanCach.BackColor = System.Drawing.Color.FromArgb(229, 234, 242);
             this.linePhanCach.Location = new System.Drawing.Point(34, 298);
             this.linePhanCach.Name = "linePhanCach";
             this.linePhanCach.Size = new System.Drawing.Size(900, 1);
@@ -133,12 +133,12 @@ namespace NT106_GROUP10
             // 
             // EditProfile
             // 
-            this.EditProfile.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(243)))), ((int)(((byte)(255)))));
+            this.EditProfile.BackColor = System.Drawing.Color.FromArgb(235, 243, 255);
             this.EditProfile.Cursor = System.Windows.Forms.Cursors.Hand;
             this.EditProfile.FlatAppearance.BorderSize = 0;
             this.EditProfile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.EditProfile.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.EditProfile.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this.EditProfile.ForeColor = System.Drawing.Color.FromArgb(37, 99, 235);
             this.EditProfile.Location = new System.Drawing.Point(522, 220);
             this.EditProfile.Name = "EditProfile";
             this.EditProfile.Size = new System.Drawing.Size(403, 46);
@@ -148,7 +148,7 @@ namespace NT106_GROUP10
             // 
             // ChangeAvatar
             // 
-            this.ChangeAvatar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(116)))), ((int)(((byte)(235)))));
+            this.ChangeAvatar.BackColor = System.Drawing.Color.FromArgb(48, 116, 235);
             this.ChangeAvatar.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ChangeAvatar.FlatAppearance.BorderSize = 0;
             this.ChangeAvatar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -165,7 +165,7 @@ namespace NT106_GROUP10
             // 
             this.lblFriendsCount.BackColor = System.Drawing.Color.White;
             this.lblFriendsCount.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblFriendsCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(51)))), ((int)(((byte)(75)))));
+            this.lblFriendsCount.ForeColor = System.Drawing.Color.FromArgb(35, 51, 75);
             this.lblFriendsCount.Location = new System.Drawing.Point(390, 165);
             this.lblFriendsCount.Name = "lblFriendsCount";
             this.lblFriendsCount.Size = new System.Drawing.Size(140, 25);
@@ -177,7 +177,7 @@ namespace NT106_GROUP10
             // 
             this.lblPostsCount.BackColor = System.Drawing.Color.White;
             this.lblPostsCount.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblPostsCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(116)))), ((int)(((byte)(235)))));
+            this.lblPostsCount.ForeColor = System.Drawing.Color.FromArgb(48, 116, 235);
             this.lblPostsCount.Location = new System.Drawing.Point(263, 165);
             this.lblPostsCount.Name = "lblPostsCount";
             this.lblPostsCount.Size = new System.Drawing.Size(120, 25);
@@ -187,15 +187,15 @@ namespace NT106_GROUP10
             // 
             // lblAccountName
             // 
-            this.lblAccountName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(246)))), ((int)(((byte)(255)))));
-            this.lblAccountName.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblAccountName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this.lblAccountName.Location = new System.Drawing.Point(263, 112);
+            this.lblAccountName.AutoEllipsis = true;
+            this.lblAccountName.BackColor = System.Drawing.Color.White;
+            this.lblAccountName.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.lblAccountName.ForeColor = System.Drawing.Color.FromArgb(35, 51, 75);
+            this.lblAccountName.Location = new System.Drawing.Point(263, 105);
             this.lblAccountName.Name = "lblAccountName";
-            this.lblAccountName.Padding = new System.Windows.Forms.Padding(12, 0, 10, 0);
-            this.lblAccountName.Size = new System.Drawing.Size(600, 38);
+            this.lblAccountName.Size = new System.Drawing.Size(650, 38);
             this.lblAccountName.TabIndex = 16;
-            this.lblAccountName.Text = "Email";
+            this.lblAccountName.Text = "Tên hiển thị";
             this.lblAccountName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblUsername
@@ -203,17 +203,17 @@ namespace NT106_GROUP10
             this.lblUsername.AutoEllipsis = true;
             this.lblUsername.BackColor = System.Drawing.Color.White;
             this.lblUsername.Font = new System.Drawing.Font("Segoe UI", 25F, System.Drawing.FontStyle.Bold);
-            this.lblUsername.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this.lblUsername.ForeColor = System.Drawing.Color.FromArgb(35, 51, 75);
             this.lblUsername.Location = new System.Drawing.Point(258, 42);
             this.lblUsername.Name = "lblUsername";
             this.lblUsername.Size = new System.Drawing.Size(650, 60);
             this.lblUsername.TabIndex = 17;
-            this.lblUsername.Text = "Tên người dùng";
+            this.lblUsername.Text = "Username";
             this.lblUsername.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Avatar
             // 
-            this.Avatar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
+            this.Avatar.BackColor = System.Drawing.Color.FromArgb(226, 232, 240);
             this.Avatar.Location = new System.Drawing.Point(75, 43);
             this.Avatar.Name = "Avatar";
             this.Avatar.Size = new System.Drawing.Size(150, 150);
@@ -225,14 +225,13 @@ namespace NT106_GROUP10
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(252)))));
+            this.BackColor = System.Drawing.Color.FromArgb(244, 247, 252);
             this.Controls.Add(this.Card);
             this.Name = "ProfileControl";
             this.Size = new System.Drawing.Size(1262, 900);
             this.Card.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Avatar)).EndInit();
             this.ResumeLayout(false);
-
         }
 
         private System.Windows.Forms.Panel Card;

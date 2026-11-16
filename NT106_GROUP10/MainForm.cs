@@ -134,16 +134,47 @@ namespace NT106_GROUP10
             Application.Exit();
         }
 
-        private void Logout_Click(object sender, EventArgs e)
+        private async void Logout_Click(object sender, EventArgs e)
         {
-            DialogResult DangXuat = MessageBox.Show("Đăng xuất khỏi tài khoản của bạn?", "Xác nhận đăng xuất", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (DangXuat==DialogResult.Yes)
+            DialogResult result = MessageBox.Show(
+                "Đăng xuất khỏi tài khoản của bạn?",
+                "Xác nhận đăng xuất",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            try
             {
                 NhanNutDangXuat = true;
-                LoginForm Login = new LoginForm();
-                Login.Show();
+
+                // Cập nhật trạng thái offline trước khi đăng xuất.
+                await SupabaseAuthService.UpdateUserPresenceAsync("offline");
+
+                // Xóa phiên đăng nhập Supabase.
+                await SupabaseAuthService.SignOutAsync();
+
+                // Xóa thông tin phiên người dùng.
+                UserSession.UserId = null;
+                UserSession.Email = null;
+                UserSession.DisplayName = null;
+
+                LoginForm login = new LoginForm();
+                login.Show();
+
                 this.Close();
-            }    
+            }
+            catch (Exception ex)
+            {
+                NhanNutDangXuat = false;
+
+                MessageBox.Show(
+                    "Không thể đăng xuất: " + ex.Message,
+                    "Lỗi",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private void Home_Click(object sender, EventArgs e)
@@ -158,10 +189,22 @@ namespace NT106_GROUP10
 
         private void Profile_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(SupabaseAuthService.CurrentUserId))
+            {
+                MessageBox.Show(
+                    "Phiên đăng nhập không có UID Supabase.\nVui lòng đăng nhập lại.",
+                    "Lỗi phiên đăng nhập",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
             if (_profileControl == null)
             {
                 _profileControl = new ProfileControl();
             }
+
             ShowPage(_profileControl);
         }
 

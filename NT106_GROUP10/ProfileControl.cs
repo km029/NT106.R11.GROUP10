@@ -1,8 +1,10 @@
-﻿
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace NT106_GROUP10
 {
@@ -17,26 +19,30 @@ namespace NT106_GROUP10
         private string currentUID = "";
         private string currentDisplayName = "";
         private string currentUsername = "";
+        private string currentAvatarUrl = "";
+
+        private int currentPostCount = 0;
+        private int currentFriendCount = 0;
 
         public ProfileControl()
         {
             InitializeComponent();
 
             SetupDesign();
-            LoadCurrentUser();
-            ShowInfoTab();
 
             this.Resize += (s, e) => CenterCard();
             CenterCard();
-        }
 
-        // =========================
-        // GIAO DIỆN
-        // =========================
+            ChangeAvatar.Click += ChangeAvatar_Click;
+            EditProfile.Click += EditProfile_Click;
+
+            LoadCurrentUser();
+            ShowInfoTab();
+        }
 
         private void SetupDesign()
         {
-            this.BackColor = Color.FromArgb(244, 247, 252);
+            BackColor = Color.FromArgb(244, 247, 252);
 
             Card.BackColor = Color.White;
             SetRounded(Card, 24);
@@ -49,10 +55,11 @@ namespace NT106_GROUP10
             lblUsername.ForeColor = dark;
             lblUsername.Font = new Font("Segoe UI", 25, FontStyle.Bold);
 
-            lblAccountName.BackColor = Color.FromArgb(239, 246, 255);
-            lblAccountName.ForeColor = blue;
-            lblAccountName.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            SetRounded(lblAccountName, 12);
+            lblAccountName.BackColor = Color.White;
+            lblAccountName.ForeColor = dark;
+            lblAccountName.Font = new Font("Segoe UI", 16, FontStyle.Bold);
+            lblAccountName.Padding = new Padding(0);
+            lblAccountName.AutoEllipsis = true;
 
             lblPostsCount.ForeColor = blue;
             lblFriendsCount.ForeColor = dark;
@@ -61,12 +68,14 @@ namespace NT106_GROUP10
             ChangeAvatar.ForeColor = Color.White;
             ChangeAvatar.FlatStyle = FlatStyle.Flat;
             ChangeAvatar.FlatAppearance.BorderSize = 0;
+            ChangeAvatar.Cursor = Cursors.Hand;
             SetRounded(ChangeAvatar, 12);
 
             EditProfile.BackColor = Color.FromArgb(235, 243, 255);
             EditProfile.ForeColor = blue;
             EditProfile.FlatStyle = FlatStyle.Flat;
             EditProfile.FlatAppearance.BorderSize = 0;
+            EditProfile.Cursor = Cursors.Hand;
             SetRounded(EditProfile, 12);
 
             btnTabInfo.FlatStyle = FlatStyle.Flat;
@@ -74,7 +83,7 @@ namespace NT106_GROUP10
             btnTabInfo.FlatAppearance.BorderSize = 0;
             btnTabFriends.FlatAppearance.BorderSize = 0;
 
-            flpContent.AutoScroll = false;
+            flpContent.AutoScroll = true;
             flpContent.WrapContents = false;
             flpContent.FlowDirection = FlowDirection.TopDown;
             flpContent.BackColor = Color.White;
@@ -84,30 +93,46 @@ namespace NT106_GROUP10
             flpFriends.FlowDirection = FlowDirection.TopDown;
 
             pnlIndicator.BackColor = blue;
-
             flpContent.Resize += (s, e) => ResizeInfoCards();
         }
-
-        // =========================
-        // BO GÓC
-        // =========================
 
         private void SetRounded(Control control, int radius)
         {
             if (control.Width <= 0 || control.Height <= 0)
                 return;
 
+            ApplyRoundedRegion(control, radius);
+
+            control.Resize -= RoundedControl_Resize;
+            control.Resize += RoundedControl_Resize;
+        }
+
+        private void RoundedControl_Resize(object sender, EventArgs e)
+        {
+            Control control = sender as Control;
+            if (control == null) return;
+
+            int radius = control == Card ? 24 :
+                control == ChangeAvatar || control == EditProfile ? 12 : 14;
+
+            ApplyRoundedRegion(control, radius);
+        }
+
+        private void ApplyRoundedRegion(Control control, int radius)
+        {
+            if (control.Width <= 0 || control.Height <= 0)
+                return;
+
             using (GraphicsPath path = new GraphicsPath())
             {
-                int d = radius * 2;
+                int d = Math.Min(radius * 2,
+                    Math.Min(control.Width, control.Height));
 
                 path.AddArc(0, 0, d, d, 180, 90);
                 path.AddArc(control.Width - d, 0, d, d, 270, 90);
-                path.AddArc(control.Width - d, control.Height - d,
-                    d, d, 0, 90);
-                path.AddArc(0, control.Height - d,
-                    d, d, 90, 90);
-
+                path.AddArc(control.Width - d,
+                    control.Height - d, d, d, 0, 90);
+                path.AddArc(0, control.Height - d, d, d, 90, 90);
                 path.CloseFigure();
 
                 Region oldRegion = control.Region;
@@ -116,11 +141,6 @@ namespace NT106_GROUP10
                 if (oldRegion != null)
                     oldRegion.Dispose();
             }
-
-            control.Resize += (s, e) =>
-            {
-                SetRounded(control, radius);
-            };
         }
 
         private void MakeAvatarCircle()
@@ -142,19 +162,14 @@ namespace NT106_GROUP10
 
         private void CenterCard()
         {
-            if (Card == null)
-                return;
+            if (Card == null) return;
 
-            Card.Left = Math.Max(
-                0, (ClientSize.Width - Card.Width) / 2);
+            Card.Left = Math.Max(0,
+                (ClientSize.Width - Card.Width) / 2);
 
-            Card.Top = Math.Max(
-                0, (ClientSize.Height - Card.Height) / 2);
+            Card.Top = Math.Max(0,
+                (ClientSize.Height - Card.Height) / 2);
         }
-
-        // =========================
-        // ICON
-        // =========================
 
         private void DrawInfoIcon(
             object sender, PaintEventArgs e, string type)
@@ -203,16 +218,12 @@ namespace NT106_GROUP10
             }
         }
 
-        // =========================
-        // TẠO THẺ THÔNG TIN
-        // =========================
-
         private Panel CreateInfoCard(
             string icon, string title, string value)
         {
             Panel card = new Panel();
-
-            card.Width = Math.Max(100, flpContent.ClientSize.Width - 20);
+            card.Width = Math.Max(
+                100, flpContent.ClientSize.Width - 20);
             card.Height = 92;
             card.Margin = new Padding(3, 4, 3, 4);
             card.BackColor = lightBlue;
@@ -221,25 +232,22 @@ namespace NT106_GROUP10
             iconPanel.Size = new Size(54, 54);
             iconPanel.Location = new Point(18, 19);
             iconPanel.BackColor = Color.FromArgb(226, 237, 255);
-
             SetRounded(iconPanel, 14);
-
             iconPanel.Paint += (s, e) =>
                 DrawInfoIcon(s, e, icon);
 
             Label lblTitle = new Label();
             lblTitle.Text = title;
-            lblTitle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            lblTitle.Font = new Font(
+                "Segoe UI", 10, FontStyle.Bold);
             lblTitle.ForeColor = dark;
             lblTitle.Location = new Point(88, 14);
             lblTitle.Size = new Size(card.Width - 110, 27);
 
             Label lblValue = new Label();
             lblValue.Text = string.IsNullOrWhiteSpace(value)
-                ? "Chưa cập nhật"
-                : value;
-
-            lblValue.Font = new Font("Segoe UI", 10, FontStyle.Regular);
+                ? "Chưa cập nhật" : value;
+            lblValue.Font = new Font("Segoe UI", 10);
             lblValue.ForeColor = muted;
             lblValue.Location = new Point(88, 46);
             lblValue.Size = new Size(card.Width - 110, 28);
@@ -250,20 +258,15 @@ namespace NT106_GROUP10
             card.Controls.Add(lblValue);
 
             SetRounded(card, 15);
-
             return card;
         }
-
-        // =========================
-        // KÍCH THƯỚC THẺ
-        // =========================
 
         private void ResizeInfoCards()
         {
             foreach (Control card in flpContent.Controls)
             {
                 card.Width = Math.Max(
-                    100, flpContent.ClientSize.Width - 20);
+                    100, flpContent.ClientSize.Width - 25);
 
                 foreach (Control child in card.Controls)
                 {
@@ -273,10 +276,6 @@ namespace NT106_GROUP10
             }
         }
 
-        // =========================
-        // HIỂN THỊ THÔNG TIN
-        // =========================
-
         private void LoadInfoCards()
         {
             flpContent.SuspendLayout();
@@ -285,17 +284,21 @@ namespace NT106_GROUP10
             {
                 flpContent.Controls.Clear();
 
-                flpContent.Controls.Add(CreateInfoCard(
-                    "email", "Email đăng nhập", currentEmail));
+                flpContent.Controls.Add(
+                    CreateInfoCard(
+                        "email", "Email đăng nhập", currentEmail));
 
-                flpContent.Controls.Add(CreateInfoCard(
-                    "uid", "Mã định danh (UID)", currentUID));
+                flpContent.Controls.Add(
+                    CreateInfoCard(
+                        "uid", "Mã định danh (UID)", currentUID));
 
-                flpContent.Controls.Add(CreateInfoCard(
-                    "name", "Tên hiển thị", currentDisplayName));
+                flpContent.Controls.Add(
+                    CreateInfoCard(
+                        "name", "Tên hiển thị", currentDisplayName));
 
-                flpContent.Controls.Add(CreateInfoCard(
-                    "account", "Tên tài khoản", currentUsername));
+                flpContent.Controls.Add(
+                    CreateInfoCard(
+                        "account", "Tên tài khoản", currentUsername));
             }
             finally
             {
@@ -303,97 +306,141 @@ namespace NT106_GROUP10
             }
 
             ResizeInfoCards();
+
+            // Luôn cuộn về đầu để thấy thẻ Email.
+            flpContent.AutoScrollPosition = new Point(0, 0);
         }
 
-        // =========================
-        // LẤY USER ĐANG ĐĂNG NHẬP
-        // =========================
-
-        private void LoadCurrentUser()
+        // Email và UID luôn lấy từ Supabase Auth, bỏ qua giá trị
+        // do form cha truyền vào (có thể là dữ liệu giả).
+        private void SyncAuthInfo()
         {
-            string email = UserSession.Email ?? "";
-            string uid = UserSession.UserId ?? "";
-            string displayName = UserSession.DisplayName ?? "";
+            if (!string.IsNullOrWhiteSpace(
+                SupabaseAuthService.CurrentUserId))
+                currentUID = SupabaseAuthService.CurrentUserId;
 
-            string username = "";
-
-            if (!string.IsNullOrWhiteSpace(email))
-                username = email.Split('@')[0];
-
-            if (string.IsNullOrWhiteSpace(displayName))
-                displayName = username;
-
-            SetLoggedInUser(
-                username,
-                email,
-                uid,
-                displayName,
-                0,
-                0);
+            if (!string.IsNullOrWhiteSpace(
+                SupabaseAuthService.CurrentUserEmail))
+                currentEmail = SupabaseAuthService.CurrentUserEmail;
         }
 
-        // =========================
-        // CẬP NHẬT USER
-        // =========================
+        private async void LoadCurrentUser()
+        {
+            try
+            {
+                SyncAuthInfo();
+
+                JObject profile =
+                    await SupabaseAuthService.GetCurrentProfileAsync();
+
+                currentUsername = (string)profile["username"] ?? "";
+                currentDisplayName =
+                    (string)profile["display_name"] ?? "";
+                currentAvatarUrl = (string)profile["avatar_url"] ?? "";
+
+                SyncAuthInfo();
+
+                if (string.IsNullOrWhiteSpace(currentUsername))
+                {
+                    currentUsername = !string.IsNullOrWhiteSpace(currentEmail)
+                        ? currentEmail.Split('@')[0]
+                        : "Người dùng";
+                }
+
+                if (string.IsNullOrWhiteSpace(currentDisplayName))
+                    currentDisplayName = currentUsername;
+
+                UpdateHeader(currentPostCount, currentFriendCount);
+                LoadInfoCards();
+
+                if (!string.IsNullOrWhiteSpace(currentAvatarUrl))
+                    await LoadAvatarFromUrlAsync(currentAvatarUrl);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Không thể tải thông tin hồ sơ.\n\n" + ex.Message,
+                    "Thông báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        }
+
+        private async Task LoadAvatarFromUrlAsync(string url)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient client =
+                    new System.Net.Http.HttpClient())
+                {
+                    byte[] bytes = await client.GetByteArrayAsync(url);
+
+                    using (MemoryStream ms = new MemoryStream(bytes))
+                    using (Image image = Image.FromStream(ms))
+                    {
+                        SetAvatar(image);
+                    }
+                }
+            }
+            catch
+            {
+                // Nếu ảnh chưa tải được, giữ ảnh mặc định.
+            }
+        }
 
         public void SetLoggedInUser(
-            string username,
-            string email,
-            string uid,
-            string displayName,
-            int postCount,
-            int friendCount)
+            string username, string email, string uid,
+            string displayName, int postCount, int friendCount)
         {
-            currentUsername = username ?? "";
-            currentEmail = email ?? "";
-            currentUID = uid ?? "";
-            currentDisplayName = displayName ?? "";
+            if (!string.IsNullOrWhiteSpace(username))
+                currentUsername = username;
 
-            lblUsername.Text =
-                string.IsNullOrWhiteSpace(currentDisplayName)
-                ? currentUsername
-                : currentDisplayName;
+            if (!string.IsNullOrWhiteSpace(displayName))
+                currentDisplayName = displayName;
 
-            if (string.IsNullOrWhiteSpace(lblUsername.Text))
-                lblUsername.Text = "Người dùng";
+            // Tham số email, uid chỉ dùng khi chưa có dữ liệu từ Auth.
+            if (string.IsNullOrWhiteSpace(currentEmail))
+                currentEmail = email ?? "";
 
-            lblAccountName.Text = "✉   " +
-                (string.IsNullOrWhiteSpace(currentEmail)
-                ? "Chưa cập nhật email"
-                : currentEmail);
+            if (string.IsNullOrWhiteSpace(currentUID))
+                currentUID = uid ?? "";
 
-            lblPostsCount.Text = postCount + " bài viết";
-            lblFriendsCount.Text = friendCount + " bạn bè";
+            SyncAuthInfo();
 
+            currentPostCount = postCount;
+            currentFriendCount = friendCount;
+
+            UpdateHeader(postCount, friendCount);
             LoadInfoCards();
         }
 
-        // =========================
-        // TƯƠNG THÍCH CODE CŨ
-        // =========================
+        private void UpdateHeader(int postCount, int friendCount)
+        {
+            lblUsername.Text =
+                string.IsNullOrWhiteSpace(currentUsername)
+                ? "Người dùng" : currentUsername;
+
+            lblAccountName.Text =
+                string.IsNullOrWhiteSpace(currentDisplayName)
+                ? currentUsername : currentDisplayName;
+
+            lblPostsCount.Text = postCount + " bài viết";
+            lblFriendsCount.Text = friendCount + " bạn bè";
+        }
 
         public void SetProfileInfo(
             string username, string email,
             int postCount, int friendCount)
         {
             SetLoggedInUser(
-                username,
-                email,
-                "UID_" + email,
-                username,
-                postCount,
-                friendCount);
+                username, email, currentUID,
+                currentDisplayName, postCount, friendCount);
         }
-
-        // =========================
-        // AVATAR
-        // =========================
 
         public void SetAvatar(Image image)
         {
             Image newImage = image == null
-                ? null
-                : (Image)image.Clone();
+                ? null : (Image)image.Clone();
 
             Image oldImage = Avatar.Image;
             Avatar.Image = newImage;
@@ -404,9 +451,165 @@ namespace NT106_GROUP10
             MakeAvatarCircle();
         }
 
-        // =========================
-        // TAB THÔNG TIN
-        // =========================
+        private async void ChangeAvatar_Click(
+            object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(
+                SupabaseAuthService.CurrentUserId))
+            {
+                MessageBox.Show(
+                    "Không xác định được tài khoản. Vui lòng đăng nhập lại.",
+                    "Thông báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Chọn ảnh đại diện";
+                dialog.Filter =
+                    "Ảnh (*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp";
+                dialog.Multiselect = false;
+
+                if (dialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                try
+                {
+                    ChangeAvatar.Enabled = false;
+                    ChangeAvatar.Text = "Đang tải ảnh...";
+
+                    string extension =
+                        Path.GetExtension(dialog.FileName).ToLowerInvariant();
+
+                    string contentType;
+
+                    switch (extension)
+                    {
+                        case ".png":
+                            contentType = "image/png";
+                            break;
+                        case ".bmp":
+                            contentType = "image/bmp";
+                            break;
+                        default:
+                            contentType = "image/jpeg";
+                            break;
+                    }
+
+                    byte[] imageBytes =
+                        File.ReadAllBytes(dialog.FileName);
+
+                    if (imageBytes.Length > 5 * 1024 * 1024)
+                    {
+                        throw new Exception(
+                            "Ảnh không được lớn hơn 5 MB.");
+                    }
+
+                    string newAvatarUrl =
+                        await SupabaseAuthService.UploadAvatarAsync(
+                            imageBytes, extension, contentType);
+
+                    using (MemoryStream ms =
+                        new MemoryStream(imageBytes))
+                    using (Image selectedImage =
+                        Image.FromStream(ms))
+                    {
+                        SetAvatar(selectedImage);
+                    }
+
+                    currentAvatarUrl = newAvatarUrl;
+
+                    MessageBox.Show(
+                        "Đã cập nhật ảnh đại diện thành công.",
+                        "Thành công",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        "Không thể đổi ảnh đại diện.\n\n" + ex.Message,
+                        "Lỗi",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    ChangeAvatar.Enabled = true;
+                    ChangeAvatar.Text = "Đổi ảnh đại diện";
+                }
+            }
+        }
+
+        private async void EditProfile_Click(
+            object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(
+                SupabaseAuthService.CurrentUserId))
+            {
+                MessageBox.Show(
+                    "Không xác định được tài khoản. Vui lòng đăng nhập lại.",
+                    "Thông báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            using (EditProfileDialog dialog =
+                new EditProfileDialog(currentDisplayName))
+            {
+                if (dialog.ShowDialog(FindForm()) != DialogResult.OK)
+                    return;
+
+                string newDisplayName =
+                    dialog.DisplayNameValue.Trim();
+
+                if (string.IsNullOrWhiteSpace(newDisplayName))
+                {
+                    MessageBox.Show(
+                        "Tên hiển thị không được để trống.",
+                        "Thông báo",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                try
+                {
+                    EditProfile.Enabled = false;
+
+                    await SupabaseAuthService.UpdateDisplayNameAsync(
+                        newDisplayName);
+
+                    currentDisplayName = newDisplayName;
+
+                    UpdateHeader(
+                        currentPostCount, currentFriendCount);
+
+                    LoadInfoCards();
+
+                    MessageBox.Show(
+                        "Đã cập nhật thông tin cá nhân.",
+                        "Thành công",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        "Không thể cập nhật thông tin.\n\n" + ex.Message,
+                        "Lỗi",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    EditProfile.Enabled = true;
+                }
+            }
+        }
 
         private void ShowInfoTab()
         {
@@ -427,10 +630,6 @@ namespace NT106_GROUP10
             ShowInfoTab();
         }
 
-        // =========================
-        // TAB BẠN BÈ
-        // =========================
-
         private void ShowFriendsTab()
         {
             flpContent.Visible = false;
@@ -450,10 +649,6 @@ namespace NT106_GROUP10
             ShowFriendsTab();
         }
 
-        // =========================
-        // VIỀN CARD
-        // =========================
-
         private void Card_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -470,16 +665,84 @@ namespace NT106_GROUP10
                     int d = r * 2;
 
                     path.AddArc(rect.X, rect.Y, d, d, 180, 90);
-                    path.AddArc(rect.Right - d, rect.Y, d, d, 270, 90);
-                    path.AddArc(rect.Right - d, rect.Bottom - d,
+                    path.AddArc(
+                        rect.Right - d, rect.Y, d, d, 270, 90);
+                    path.AddArc(
+                        rect.Right - d, rect.Bottom - d,
                         d, d, 0, 90);
-                    path.AddArc(rect.X, rect.Bottom - d,
-                        d, d, 90, 90);
+                    path.AddArc(
+                        rect.X, rect.Bottom - d, d, d, 90, 90);
 
                     path.CloseFigure();
                     e.Graphics.DrawPath(pen, path);
                 }
             }
+        }
+    }
+
+    internal class EditProfileDialog : Form
+    {
+        private TextBox txtDisplayName;
+
+        public string DisplayNameValue
+        {
+            get { return txtDisplayName.Text; }
+        }
+
+        public EditProfileDialog(string currentName)
+        {
+            Text = "Chỉnh sửa thông tin cá nhân";
+            StartPosition = FormStartPosition.CenterParent;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            ShowInTaskbar = false;
+            ClientSize = new Size(440, 205);
+            BackColor = Color.White;
+            Font = new Font("Segoe UI", 10);
+
+            Label title = new Label();
+            title.Text = "Tên hiển thị";
+            title.Font = new Font(
+                "Segoe UI", 10, FontStyle.Bold);
+            title.ForeColor = Color.FromArgb(35, 51, 75);
+            title.Location = new Point(25, 25);
+            title.Size = new Size(380, 25);
+
+            txtDisplayName = new TextBox();
+            txtDisplayName.Text = currentName ?? "";
+            txtDisplayName.Font = new Font("Segoe UI", 11);
+            txtDisplayName.Location = new Point(25, 58);
+            txtDisplayName.Size = new Size(390, 32);
+            txtDisplayName.MaxLength = 100;
+
+            Button btnSave = new Button();
+            btnSave.Text = "Lưu thay đổi";
+            btnSave.DialogResult = DialogResult.OK;
+            btnSave.BackColor = Color.FromArgb(48, 116, 235);
+            btnSave.ForeColor = Color.White;
+            btnSave.FlatStyle = FlatStyle.Flat;
+            btnSave.FlatAppearance.BorderSize = 0;
+            btnSave.Location = new Point(220, 130);
+            btnSave.Size = new Size(125, 40);
+
+            Button btnCancel = new Button();
+            btnCancel.Text = "Hủy";
+            btnCancel.DialogResult = DialogResult.Cancel;
+            btnCancel.BackColor = Color.FromArgb(235, 243, 255);
+            btnCancel.ForeColor = Color.FromArgb(48, 116, 235);
+            btnCancel.FlatStyle = FlatStyle.Flat;
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.Location = new Point(355, 130);
+            btnCancel.Size = new Size(60, 40);
+
+            Controls.Add(title);
+            Controls.Add(txtDisplayName);
+            Controls.Add(btnSave);
+            Controls.Add(btnCancel);
+
+            AcceptButton = btnSave;
+            CancelButton = btnCancel;
         }
     }
 }
