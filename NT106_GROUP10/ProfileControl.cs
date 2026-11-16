@@ -92,7 +92,7 @@ namespace NT106_GROUP10
         // BO GÓC
         // =========================
 
-        private void SetRounded(Control control, int radius)
+        private void ApplyRoundedRegion(Control control, int radius)
         {
             if (control.Width <= 0 || control.Height <= 0)
                 return;
@@ -100,14 +100,10 @@ namespace NT106_GROUP10
             using (GraphicsPath path = new GraphicsPath())
             {
                 int d = radius * 2;
-
                 path.AddArc(0, 0, d, d, 180, 90);
                 path.AddArc(control.Width - d, 0, d, d, 270, 90);
-                path.AddArc(control.Width - d, control.Height - d,
-                    d, d, 0, 90);
-                path.AddArc(0, control.Height - d,
-                    d, d, 90, 90);
-
+                path.AddArc(control.Width - d, control.Height - d, d, d, 0, 90);
+                path.AddArc(0, control.Height - d, d, d, 90, 90);
                 path.CloseFigure();
 
                 Region oldRegion = control.Region;
@@ -116,12 +112,15 @@ namespace NT106_GROUP10
                 if (oldRegion != null)
                     oldRegion.Dispose();
             }
-
-            control.Resize += (s, e) =>
-            {
-                SetRounded(control, radius);
-            };
         }
+
+        private void SetRounded(Control control, int radius)
+        {
+            ApplyRoundedRegion(control, radius);
+            control.Resize += (s, e) => ApplyRoundedRegion(control, radius);
+        }
+
+
 
         private void MakeAvatarCircle()
         {

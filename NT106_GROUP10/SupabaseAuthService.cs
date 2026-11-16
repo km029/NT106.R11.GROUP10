@@ -149,7 +149,7 @@ namespace NT106_GROUP10
             }
         }
 
-        internal static async Task SignInAsync(string usernameOrEmail, string password)
+        internal static async Task<string> SignInAsync(string usernameOrEmail, string password)
         {
             string input = usernameOrEmail.Trim();
 
@@ -189,12 +189,17 @@ namespace NT106_GROUP10
 
                 using (HttpResponseMessage response = await Http.SendAsync(request))
                 {
+                    string body = await response.Content.ReadAsStringAsync();
+
                     if (!response.IsSuccessStatusCode)
                     {
+                        if (body.IndexOf("Email not confirmed", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            throw new InvalidOperationException("EMAIL_NOT_CONFIRMED");
+                        }
                         throw new InvalidOperationException("WRONG_CREDENTIALS");
                     }
 
-                    string body = await response.Content.ReadAsStringAsync();
                     JObject result = JObject.Parse(body);
 
                     string accessToken = (string)result["access_token"];
@@ -210,6 +215,8 @@ namespace NT106_GROUP10
                     CurrentUserId = (string)result["user"]?["id"];
 
                     await UpdateUserPresenceAsync("online");
+
+                    return CurrentUserId;
                 }
             }
         }
