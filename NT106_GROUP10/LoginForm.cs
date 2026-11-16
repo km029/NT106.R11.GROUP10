@@ -52,11 +52,12 @@ namespace NT106_GROUP10
             this.Cursor = Cursors.WaitCursor;
             try
             {
-                await SupabaseAuthService.SignInAsync(email, password);
+                string realUserId = await SupabaseAuthService.SignInAsync(email, password);
                 
+
                 UserSession.Email = email;
                 UserSession.DisplayName = email.Split('@')[0];
-                UserSession.UserId = "UID_" + email; 
+                UserSession.UserId = realUserId;
 
                 MainForm mainForm = new MainForm();
                 mainForm.Show();
@@ -68,9 +69,17 @@ namespace NT106_GROUP10
                 {
                     MessageBox.Show("Tài khoản chưa tồn tại, vui lòng đăng ký.", "Chưa có tài khoản", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
+                else if (ex.Message == "EMAIL_NOT_CONFIRMED")
+                {
+                    MessageBox.Show("Tài khoản chưa xác nhận email. Vui lòng mở hộp thư và bấm vào link xác nhận!", "Chưa kích hoạt", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else if (ex.Message == "WRONG_CREDENTIALS")
+                {
+                    MessageBox.Show("Sai email hoặc mật khẩu.", "Đăng nhập chưa thành công", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 else
                 {
-                    MessageBox.Show("Sai mật khẩu hoặc tài khoản.", "Đăng nhập chưa thành công", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Chi tiết lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 txtPassword.TextButton = "";

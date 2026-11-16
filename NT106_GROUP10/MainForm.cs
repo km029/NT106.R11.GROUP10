@@ -150,7 +150,7 @@ namespace NT106_GROUP10
         {
             if (_homeControl==null)
             {
-                _homeControl = new HomeControl();
+                _homeControl = new HomeControl              ();
             }
             ShowPage(_homeControl);
 
