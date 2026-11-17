@@ -116,7 +116,7 @@ namespace NT106_GROUP10
                 await SupabaseAuthService.SignUpAsync(username, email, password);
 
                 MessageBox.Show(
-                    "Đã tạo tài khoản thành công, vui lòng dùng tên đăng nhập (hoặc email) và mật khẩu để đăng nhập.",
+                    "Đã tạo tài khoản thành công, vui lòng kiểm tra email và click vào link xác nhận (Nếu không có hãy kiểm tra hòm thư rác).",
                     "Thành công",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
