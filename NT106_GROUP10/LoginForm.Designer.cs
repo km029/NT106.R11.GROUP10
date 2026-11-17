@@ -108,7 +108,6 @@
             this.txtPassword.TextButton = "";
             this.txtPassword.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             this.txtPassword.Timer_RGB = 300;
-
             // 
             // txtUsername
             // 
@@ -257,12 +256,12 @@
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(223, 45);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "CHAT APP";
+            this.lblTitle.Text = "BONDA CHATAPP";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // LoginForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 23F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.BackgroundImage = global::NT106_GROUP10.Properties.Resources.BackgroundLogin;
