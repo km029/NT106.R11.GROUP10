@@ -8,6 +8,9 @@ namespace NT106_GROUP10
 {
     public partial class RegisterForm : Form
     {
+        private bool DangXemMK = false;
+        private bool DangXemMK1= false;
+
         public RegisterForm()
         {
             InitializeComponent();
@@ -145,6 +148,39 @@ namespace NT106_GROUP10
         private void lnkBackToLogin_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void HienThiMK1_Click(object sender, EventArgs e)
+        {
+            DangXemMK1 = !DangXemMK1;
+            if (DangXemMK1 == false)
+            {
+                txtRegPassword.Password = true;
+                HienThiMK1.Image = Properties.Resources.ic_closed_eye_25;
+            }
+            else
+            {
+                txtRegPassword.Password = false;
+
+                HienThiMK1.Image = Properties.Resources.ic_eye_25;
+            }
+
+        }
+
+        private void HienThiMK_Click(object sender, EventArgs e)
+        {
+            DangXemMK = !DangXemMK;
+            if (DangXemMK == false)
+            {
+                txtConfirmPassword.Password = true;
+                HienThiMK.Image = Properties.Resources.ic_closed_eye_25;
+            }
+            else
+            {
+                txtConfirmPassword.Password = false;
+
+                HienThiMK.Image = Properties.Resources.ic_eye_25;
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ namespace NT106_GROUP10
 {
     public partial class LoginForm : Form
     {
+        private bool dangHienMatKhau = false;
         public LoginForm()
         {
             InitializeComponent();
@@ -40,20 +41,24 @@ namespace NT106_GROUP10
             string email = txtUsername.TextButton.Trim();
             string password = txtPassword.TextButton;
 
-            if (string.IsNullOrWhiteSpace(email) ||
-                string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
-                MessageBox.Show("Vui lòng nhập tài khoản (username hoặc email) và mật khẩu!");
+                MessageBox.Show("Vui lòng nhập tài khoản và mật khẩu!");
                 return;
             }
 
             btnLogin.Enabled = false;
             btnLogin.ButtonText = "Đang đăng nhập...";
             this.Cursor = Cursors.WaitCursor;
-
             try
             {
-                await SupabaseAuthService.SignInAsync(email, password);
+                string realUserId = await SupabaseAuthService.SignInAsync(email, password);
+                
+
+                UserSession.Email = email;
+                UserSession.DisplayName = email.Split('@')[0];
+                UserSession.UserId = realUserId;
+
                 MainForm mainForm = new MainForm();
                 mainForm.Show();
                 this.Hide();
@@ -62,19 +67,19 @@ namespace NT106_GROUP10
             {
                 if (ex.Message == "ACCOUNT_NOT_FOUND")
                 {
-                    MessageBox.Show(
-                        "Tài khoản chưa tồn tại, vui lòng đăng ký.",
-                        "Chưa có tài khoản",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
+                    MessageBox.Show("Tài khoản chưa tồn tại, vui lòng đăng ký.", "Chưa có tài khoản", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else if (ex.Message == "EMAIL_NOT_CONFIRMED")
+                {
+                    MessageBox.Show("Tài khoản chưa xác nhận email. Vui lòng mở hộp thư và bấm vào link xác nhận!", "Chưa kích hoạt", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else if (ex.Message == "WRONG_CREDENTIALS")
+                {
+                    MessageBox.Show("Sai email hoặc mật khẩu.", "Đăng nhập chưa thành công", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {
-                    MessageBox.Show(
-                        "Sai mật khẩu hoặc tài khoản.",
-                        "Đăng nhập chưa thành công",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Chi tiết lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 txtPassword.TextButton = "";
@@ -100,5 +105,23 @@ namespace NT106_GROUP10
                 form.ShowDialog(this);
             }
         }
+
+        private void HienThiMK_Click(object sender, EventArgs e)
+        {
+            dangHienMatKhau = !dangHienMatKhau;
+            if (dangHienMatKhau == false )
+            {
+                txtPassword.Password = true;
+                HienThiMK.Image = Properties.Resources.ic_closed_eye_25;
+            }
+            else
+            {
+                txtPassword.Password = false;
+                
+                HienThiMK.Image = Properties.Resources.ic_eye_25;
+            }
+        }
+
+        
     }
 }
