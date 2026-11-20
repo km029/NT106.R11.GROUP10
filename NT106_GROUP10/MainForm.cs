@@ -134,23 +134,49 @@ namespace NT106_GROUP10
             Application.Exit();
         }
 
-        private void Logout_Click(object sender, EventArgs e)
+        private async void Logout_Click(object sender, EventArgs e)
         {
-            DialogResult DangXuat = MessageBox.Show("Đăng xuất khỏi tài khoản của bạn?", "Xác nhận đăng xuất", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (DangXuat==DialogResult.Yes)
+            DialogResult DangXuat = MessageBox.Show(
+                "Đăng xuất khỏi tài khoản của bạn?",
+                "Xác nhận đăng xuất",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (DangXuat != DialogResult.Yes) return;
+            // Khóa nút bấm và hiện phản hồi đang xử lý để tránh spam
+            Logout.Enabled = false;
+            Logout.Text = "Đang đăng xuất...";
+            this.Cursor = Cursors.WaitCursor;
+            try
             {
+                // Hủy các UserControl đang nhúng
+                _messengerControl?.Dispose();
+                _homeControl?.Dispose();
+                _reelsControl?.Dispose();
+                _search?.Dispose();
+                _profileControl?.Dispose();
+
+                //Gửi lệnh cập nhật offline + hủy token lên Supabase, cho phép delay 10s
+                Task signOutTask = SupabaseAuthService.SignOutAsync();
+                await Task.WhenAny(signOutTask, Task.Delay(10000));
+            }
+            finally
+            {
+                //Đưa con trỏ chuột về mặc định, bật cờ đăng xuất và quay về LoginForm
+                this.Cursor = Cursors.Default;
                 NhanNutDangXuat = true;
+
                 LoginForm Login = new LoginForm();
                 Login.Show();
                 this.Close();
-            }    
+            }
         }
 
         private void Home_Click(object sender, EventArgs e)
         {
             if (_homeControl==null)
             {
-                _homeControl = new HomeControl              ();
+                _homeControl = new HomeControl();
             }
             ShowPage(_homeControl);
 

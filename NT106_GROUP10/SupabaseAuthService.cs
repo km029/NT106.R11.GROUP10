@@ -234,7 +234,7 @@ namespace NT106_GROUP10
                 string json = JsonConvert.SerializeObject(new
                 {
                     status = status,
-                    last_seen_at = DateTime.UtcNow.ToString("o")
+                    last_seen_at = DateTime.UtcNow.AddHours(7).ToString("yyyy-MM-dd HH:mm:ss.ffffff")
                 });
 
                 using (var request = new HttpRequestMessage(new HttpMethod("PATCH"), url))
@@ -248,7 +248,40 @@ namespace NT106_GROUP10
             }
             catch { }
         }
+        // Hàm phục vụ đăng xuất
+        internal static async Task SignOutAsync()
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(AccessToken) && !string.IsNullOrEmpty(CurrentUserId))
+                {
+                    // Gọi lại hàm có sẵn để cập nhật status = "offline" và last_seen_at lên bảng profiles
+                    await UpdateUserPresenceAsync("offline");
 
+                    // Gọi POST tới Supabase Auth để thu hồi AccessToken hiện tại trên server
+                    string url = SupabaseConfig.ProjectUrl.TrimEnd('/') + "/auth/v1/logout";
+
+                    using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+                    {
+                        request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
+                        request.Headers.Add("Authorization", "Bearer " + AccessToken);
+
+                        await Http.SendAsync(request);
+                    }
+                }
+            }
+            catch
+            {
+                // Bỏ qua lỗi mạng (ví dụ rớt Wi-Fi đúng lúc bấm đăng xuất) để không kẹt người dùng
+            }
+            finally
+            {
+                //Xóa sạch toàn bộ thông tin phiên đăng nhập đang lưu trên RAM
+                AccessToken = null;
+                RefreshToken = null;
+                CurrentUserId = null;
+            }
+        }
         internal static async Task SendPasswordResetAsync(string email)
         {
             string url = SupabaseConfig.ProjectUrl.TrimEnd('/')
