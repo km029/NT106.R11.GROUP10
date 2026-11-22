@@ -136,44 +136,39 @@ namespace NT106_GROUP10
 
         private async void Logout_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show(
+            DialogResult DangXuat = MessageBox.Show(
                 "Đăng xuất khỏi tài khoản của bạn?",
                 "Xác nhận đăng xuất",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
-            if (result != DialogResult.Yes)
-                return;
-
+            if (DangXuat != DialogResult.Yes) return;
+            // Khóa nút bấm và hiện phản hồi đang xử lý để tránh spam
+            Logout.Enabled = false;
+            Logout.Text = "Đang đăng xuất...";
+            this.Cursor = Cursors.WaitCursor;
             try
             {
+                // Hủy các UserControl đang nhúng
+                _messengerControl?.Dispose();
+                _homeControl?.Dispose();
+                _reelsControl?.Dispose();
+                _search?.Dispose();
+                _profileControl?.Dispose();
+
+                //Gửi lệnh cập nhật offline + hủy token lên Supabase, cho phép delay 10s
+                Task signOutTask = SupabaseAuthService.SignOutAsync();
+                await Task.WhenAny(signOutTask, Task.Delay(10000));
+            }
+            finally
+            {
+                //Đưa con trỏ chuột về mặc định, bật cờ đăng xuất và quay về LoginForm
+                this.Cursor = Cursors.Default;
                 NhanNutDangXuat = true;
 
-                // Cập nhật trạng thái offline trước khi đăng xuất.
-                await SupabaseAuthService.UpdateUserPresenceAsync("offline");
-
-                // Xóa phiên đăng nhập Supabase.
-                await SupabaseAuthService.SignOutAsync();
-
-                // Xóa thông tin phiên người dùng.
-                UserSession.UserId = null;
-                UserSession.Email = null;
-                UserSession.DisplayName = null;
-
-                LoginForm login = new LoginForm();
-                login.Show();
-
+                LoginForm Login = new LoginForm();
+                Login.Show();
                 this.Close();
-            }
-            catch (Exception ex)
-            {
-                NhanNutDangXuat = false;
-
-                MessageBox.Show(
-                    "Không thể đăng xuất: " + ex.Message,
-                    "Lỗi",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
             }
         }
 
@@ -189,22 +184,10 @@ namespace NT106_GROUP10
 
         private void Profile_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(SupabaseAuthService.CurrentUserId))
-            {
-                MessageBox.Show(
-                    "Phiên đăng nhập không có UID Supabase.\nVui lòng đăng nhập lại.",
-                    "Lỗi phiên đăng nhập",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-
-                return;
-            }
-
             if (_profileControl == null)
             {
                 _profileControl = new ProfileControl();
             }
-
             ShowPage(_profileControl);
         }
 

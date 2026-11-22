@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
@@ -9,6 +8,8 @@ namespace NT106_GROUP10
 {
     public partial class LoginForm : Form
     {
+        private bool dangHienMatKhau = false;
+
         public LoginForm()
         {
             InitializeComponent();
@@ -158,6 +159,14 @@ namespace NT106_GROUP10
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
                 }
+                else if (ex.Message == "EMAIL_NOT_CONFIRMED")
+                {
+                    MessageBox.Show(
+                        "Tài khoản chưa xác nhận email. Vui lòng mở hộp thư và bấm vào link xác nhận!",
+                        "Chưa kích hoạt",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }
                 else if (ex.Message == "WRONG_CREDENTIALS")
                 {
                     MessageBox.Show(
@@ -204,6 +213,25 @@ namespace NT106_GROUP10
             using (var form = new ForgotPasswordForm())
             {
                 form.ShowDialog(this);
+            }
+        }
+
+        // =========================================
+        // ẨN / HIỆN MẬT KHẨU
+        // =========================================
+
+        private void HienThiMK_Click(object sender, EventArgs e)
+        {
+            dangHienMatKhau = !dangHienMatKhau;
+            if (dangHienMatKhau == false)
+            {
+                txtPassword.Password = true;
+                HienThiMK.Image = Properties.Resources.ic_closed_eye_25;
+            }
+            else
+            {
+                txtPassword.Password = false;
+                HienThiMK.Image = Properties.Resources.ic_eye_25;
             }
         }
     }
