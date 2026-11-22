@@ -145,6 +145,7 @@
             this.EditProfile.TabIndex = 6;
             this.EditProfile.Text = "Chỉnh sửa trang cá nhân";
             this.EditProfile.UseVisualStyleBackColor = false;
+            this.EditProfile.Click += new System.EventHandler(this.EditProfile_Click);
             // 
             // ChangeAvatar
             // 
@@ -160,6 +161,7 @@
             this.ChangeAvatar.TabIndex = 5;
             this.ChangeAvatar.Text = "Đổi ảnh đại diện";
             this.ChangeAvatar.UseVisualStyleBackColor = false;
+            this.ChangeAvatar.Click += new System.EventHandler(this.ChangeAvatar_Click);
             // 
             // lblFriendsCount
             // 

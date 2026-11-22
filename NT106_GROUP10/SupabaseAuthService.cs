@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -10,6 +13,8 @@ namespace NT106_GROUP10
 {
     internal static class SupabaseAuthService
     {
+        private const string AvatarBucket = "avatars";
+
         private static readonly HttpClient Http = new HttpClient
         {
             Timeout = TimeSpan.FromSeconds(20)
@@ -18,6 +23,7 @@ namespace NT106_GROUP10
         internal static string AccessToken { get; private set; }
         internal static string RefreshToken { get; private set; }
         internal static string CurrentUserId { get; private set; }
+        internal static string CurrentUserEmail { get; private set; }
 
         // Hàm dùng chung kiểm tra mật khẩu: >= 8 ký tự, hoa, thường, số, ký tự đặc biệt
         internal static bool IsValidPassword(string password)
@@ -213,11 +219,145 @@ namespace NT106_GROUP10
                     AccessToken = accessToken;
                     RefreshToken = refreshToken;
                     CurrentUserId = (string)result["user"]?["id"];
+                    CurrentUserEmail = (string)result["user"]?["email"] ?? emailToLogin;
 
                     await UpdateUserPresenceAsync("online");
 
                     return CurrentUserId;
                 }
+            }
+        }
+
+        internal static async Task<JObject> GetCurrentProfileAsync()
+        {
+            if (string.IsNullOrWhiteSpace(CurrentUserId))
+                return null;
+
+            string url = SupabaseConfig.ProjectUrl.TrimEnd('/')
+                         + "/rest/v1/profiles?id=eq." + Uri.EscapeDataString(CurrentUserId)
+                         + "&select=*";
+
+            using (var request = new HttpRequestMessage(HttpMethod.Get, url))
+            {
+                request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
+                if (!string.IsNullOrWhiteSpace(AccessToken))
+                {
+                    request.Headers.Add("Authorization", "Bearer " + AccessToken);
+                }
+                else
+                {
+                    request.Headers.Add("Authorization", "Bearer " + SupabaseConfig.PublishableKey);
+                }
+
+                using (HttpResponseMessage response = await Http.SendAsync(request))
+                {
+                    if (!response.IsSuccessStatusCode)
+                        return null;
+
+                    string body = await response.Content.ReadAsStringAsync();
+                    JArray arr = JArray.Parse(body);
+                    return arr.FirstOrDefault() as JObject;
+                }
+            }
+        }
+
+        internal static async Task<string> UploadAvatarAsync(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(CurrentUserId) || string.IsNullOrWhiteSpace(AccessToken))
+                throw new InvalidOperationException("Bạn chưa đăng nhập.");
+
+            string ext = Path.GetExtension(filePath)?.ToLowerInvariant();
+            if (string.IsNullOrEmpty(ext)) ext = ".png";
+
+            string contentType = "image/png";
+            if (ext == ".jpg" || ext == ".jpeg") contentType = "image/jpeg";
+            else if (ext == ".webp") contentType = "image/webp";
+            else if (ext == ".gif") contentType = "image/gif";
+
+            string objectPath = $"{CurrentUserId}/avatar_{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}{ext}";
+            string baseUrl = SupabaseConfig.ProjectUrl.TrimEnd('/');
+            string uploadUrl = $"{baseUrl}/storage/v1/object/{AvatarBucket}/{objectPath}";
+
+            byte[] fileBytes = File.ReadAllBytes(filePath);
+
+            using (var request = new HttpRequestMessage(HttpMethod.Post, uploadUrl))
+            {
+                request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
+                request.Headers.Add("Authorization", "Bearer " + AccessToken);
+                request.Headers.Add("x-upsert", "true");
+
+                var byteContent = new ByteArrayContent(fileBytes);
+                byteContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+                request.Content = byteContent;
+
+                using (HttpResponseMessage response = await Http.SendAsync(request))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        string err = await response.Content.ReadAsStringAsync();
+                        throw new Exception("Upload ảnh thất bại: " + err);
+                    }
+                }
+            }
+
+            string publicUrl = $"{baseUrl}/storage/v1/object/public/{AvatarBucket}/{objectPath}";
+            await UpdateProfileAsync(null, null, publicUrl);
+            return publicUrl;
+        }
+
+        internal static async Task UpdateProfileAsync(
+            string newUsername, string newDisplayName, string newAvatarUrl = null)
+        {
+            if (string.IsNullOrWhiteSpace(CurrentUserId) || string.IsNullOrWhiteSpace(AccessToken))
+                throw new InvalidOperationException("Bạn chưa đăng nhập.");
+
+            var payload = new JObject();
+            if (newUsername != null) payload["username"] = newUsername.Trim();
+            if (newDisplayName != null) payload["display_name"] = newDisplayName.Trim();
+            if (newAvatarUrl != null) payload["avatar_url"] = newAvatarUrl;
+
+            if (payload.Count == 0) return;
+
+            string url = SupabaseConfig.ProjectUrl.TrimEnd('/')
+                         + "/rest/v1/profiles?id=eq." + Uri.EscapeDataString(CurrentUserId);
+
+            using (var request = new HttpRequestMessage(new HttpMethod("PATCH"), url))
+            {
+                request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
+                request.Headers.Add("Authorization", "Bearer " + AccessToken);
+                request.Headers.Add("Prefer", "return=minimal");
+                request.Content = new StringContent(
+                    payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
+
+                using (HttpResponseMessage response = await Http.SendAsync(request))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        string err = await response.Content.ReadAsStringAsync();
+                        throw new Exception("Cập nhật hồ sơ thất bại: " + err);
+                    }
+                }
+            }
+        }
+
+        internal static async Task<Image> DownloadImageAsync(string imageUrl)
+        {
+            if (string.IsNullOrWhiteSpace(imageUrl)) return null;
+            try
+            {
+                using (HttpResponseMessage response = await Http.GetAsync(imageUrl))
+                {
+                    if (!response.IsSuccessStatusCode) return null;
+                    byte[] bytes = await response.Content.ReadAsByteArrayAsync();
+                    using (var ms = new MemoryStream(bytes))
+                    {
+                        return Image.FromStream(ms);
+                    }
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
 
@@ -248,6 +388,7 @@ namespace NT106_GROUP10
             }
             catch { }
         }
+
         // Hàm phục vụ đăng xuất
         internal static async Task SignOutAsync()
         {
@@ -276,12 +417,14 @@ namespace NT106_GROUP10
             }
             finally
             {
-                //Xóa sạch toàn bộ thông tin phiên đăng nhập đang lưu trên RAM
+                // Xóa sạch toàn bộ thông tin phiên đăng nhập đang lưu trên RAM
                 AccessToken = null;
                 RefreshToken = null;
                 CurrentUserId = null;
+                CurrentUserEmail = null;
             }
         }
+
         internal static async Task SendPasswordResetAsync(string email)
         {
             string url = SupabaseConfig.ProjectUrl.TrimEnd('/')
@@ -359,7 +502,7 @@ namespace NT106_GROUP10
             {
                 request.Headers.Add("apikey", SupabaseConfig.PublishableKey);
                 request.Headers.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue(
+                    new AuthenticationHeaderValue(
                         "Bearer", recoveryAccessToken);
 
                 request.Content = new StringContent(
