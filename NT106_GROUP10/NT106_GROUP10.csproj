@@ -181,6 +181,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbConfig.cs" />
+    <Compile Include="EditProfileControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EditProfileControl.Designer.cs">
+      <DependentUpon>EditProfileControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ForgotPasswordForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -257,6 +263,9 @@
       <DependentUpon>UserItemCard.cs</DependentUpon>
     </Compile>
     <Compile Include="UserSession.cs" />
+    <EmbeddedResource Include="EditProfileControl.resx">
+      <DependentUpon>EditProfileControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ForgotPasswordForm.resx">
       <DependentUpon>ForgotPasswordForm.cs</DependentUpon>
     </EmbeddedResource>
