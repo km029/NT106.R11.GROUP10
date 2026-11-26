@@ -30,14 +30,14 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.Menu = new System.Windows.Forms.Panel();
-            this.Content = new System.Windows.Forms.Panel();
-            this.DuongKe = new System.Windows.Forms.Panel();
             this.Search = new System.Windows.Forms.Button();
             this.Reels = new System.Windows.Forms.Button();
             this.Profile = new System.Windows.Forms.Button();
             this.Messenger = new System.Windows.Forms.Button();
             this.Logout = new System.Windows.Forms.Button();
             this.Home = new System.Windows.Forms.Button();
+            this.Content = new System.Windows.Forms.Panel();
+            this.DuongKe = new System.Windows.Forms.Panel();
             this.Menu.SuspendLayout();
             this.Content.SuspendLayout();
             this.SuspendLayout();
@@ -56,26 +56,6 @@
             this.Menu.Name = "Menu";
             this.Menu.Size = new System.Drawing.Size(300, 803);
             this.Menu.TabIndex = 0;
-            // 
-            // Content
-            // 
-            this.Content.BackColor = System.Drawing.Color.White;
-            this.Content.Controls.Add(this.DuongKe);
-            this.Content.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Content.Location = new System.Drawing.Point(300, 0);
-            this.Content.Name = "Content";
-            this.Content.Size = new System.Drawing.Size(1122, 803);
-            this.Content.TabIndex = 1;
-    
-            // 
-            // DuongKe
-            // 
-            this.DuongKe.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(219)))), ((int)(((byte)(219)))));
-            this.DuongKe.Dock = System.Windows.Forms.DockStyle.Left;
-            this.DuongKe.Location = new System.Drawing.Point(0, 0);
-            this.DuongKe.Name = "DuongKe";
-            this.DuongKe.Size = new System.Drawing.Size(1, 803);
-            this.DuongKe.TabIndex = 0;
             // 
             // Search
             // 
@@ -221,6 +201,25 @@
             this.Home.UseVisualStyleBackColor = false;
             this.Home.Click += new System.EventHandler(this.Home_Click);
             // 
+            // Content
+            // 
+            this.Content.BackColor = System.Drawing.Color.White;
+            this.Content.Controls.Add(this.DuongKe);
+            this.Content.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Content.Location = new System.Drawing.Point(300, 0);
+            this.Content.Name = "Content";
+            this.Content.Size = new System.Drawing.Size(1122, 803);
+            this.Content.TabIndex = 1;
+            // 
+            // DuongKe
+            // 
+            this.DuongKe.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(219)))), ((int)(((byte)(219)))));
+            this.DuongKe.Dock = System.Windows.Forms.DockStyle.Left;
+            this.DuongKe.Location = new System.Drawing.Point(0, 0);
+            this.DuongKe.Name = "DuongKe";
+            this.DuongKe.Size = new System.Drawing.Size(1, 803);
+            this.DuongKe.TabIndex = 0;
+            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -230,6 +229,7 @@
             this.Name = "MainForm";
             this.Text = "App";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Menu.ResumeLayout(false);
             this.Content.ResumeLayout(false);

@@ -101,6 +101,7 @@
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(674, 25);
             this.txtSearch.TabIndex = 0;
+            this.txtSearch.TextChanged += new System.EventHandler(this.TxtSearch_TextChanged);
             this.txtSearch.Enter += new System.EventHandler(this.TxtSearch_GotFocus);
             this.txtSearch.Leave += new System.EventHandler(this.TxtSearch_LostFocus);
             // 

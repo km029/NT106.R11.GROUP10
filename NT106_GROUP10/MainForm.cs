@@ -128,13 +128,23 @@ namespace NT106_GROUP10
         }
         bool NhanNutDangXuat = false;
 
-        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        bool DaDonDep = false;
+
+        // Hàm dọn dẹp và cập nhật offline lên Supabase
+        private async Task DonDepVaDangXuatSupabaseAsync()
         {
-            if (!NhanNutDangXuat) 
-            Application.Exit();
+            _messengerControl?.Dispose();
+            _homeControl?.Dispose();
+            _reelsControl?.Dispose();
+            _search?.Dispose();
+            _profileControl?.Dispose();
+
+            // Gửi lệnh cập nhật offline + hủy token lên Supabase, tối đa 5s để tránh treo app
+            Task signOutTask = SupabaseAuthService.SignOutAsync();
+            await Task.WhenAny(signOutTask, Task.Delay(5000));
         }
 
-        private async void Logout_Click(object sender, EventArgs e)
+        private void Logout_Click(object sender, EventArgs e)
         {
             DialogResult DangXuat = MessageBox.Show(
                 "Đăng xuất khỏi tài khoản của bạn?",
@@ -143,33 +153,47 @@ namespace NT106_GROUP10
                 MessageBoxIcon.Question);
 
             if (DangXuat != DialogResult.Yes) return;
-            // Khóa nút bấm và hiện phản hồi đang xử lý để tránh spam
+
             Logout.Enabled = false;
             Logout.Text = "Đang đăng xuất...";
             this.Cursor = Cursors.WaitCursor;
+
+            NhanNutDangXuat = true;
+            this.Close(); 
+        }
+
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (DaDonDep) return;
+            e.Cancel = true;
+            DaDonDep = true;
+            this.Cursor = Cursors.WaitCursor;
+
             try
             {
-                // Hủy các UserControl đang nhúng
-                _messengerControl?.Dispose();
-                _homeControl?.Dispose();
-                _reelsControl?.Dispose();
-                _search?.Dispose();
-                _profileControl?.Dispose();
-
-                //Gửi lệnh cập nhật offline + hủy token lên Supabase, cho phép delay 10s
-                Task signOutTask = SupabaseAuthService.SignOutAsync();
-                await Task.WhenAny(signOutTask, Task.Delay(10000));
+                await DonDepVaDangXuatSupabaseAsync();
             }
             finally
             {
-                //Đưa con trỏ chuột về mặc định, bật cờ đăng xuất và quay về LoginForm
                 this.Cursor = Cursors.Default;
-                NhanNutDangXuat = true;
 
-                LoginForm Login = new LoginForm();
-                Login.Show();
-                this.Close();
+                if (NhanNutDangXuat)
+                {
+                    LoginForm Login = new LoginForm();
+                    Login.Show();
+                    this.Close();
+                }
+                else
+                {
+                    Application.Exit();
+                }
             }
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (!NhanNutDangXuat)
+                Application.Exit();
         }
 
         private void Home_Click(object sender, EventArgs e)

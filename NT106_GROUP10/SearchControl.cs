@@ -37,10 +37,10 @@ namespace NT106_GROUP10
             Kqua.Resize += FlpResults_Resize;
 
             // Đăng ký các sự kiện nhập liệu và bộ đếm thời gian chống spam request (Debounce)
-            txtSearch.GotFocus += TxtSearch_GotFocus;
-            txtSearch.LostFocus += TxtSearch_LostFocus;
-            txtSearch.TextChanged += TxtSearch_TextChanged;
-            Delay.Tick += DebounceTimer_Tick;
+          //  txtSearch.GotFocus += TxtSearch_GotFocus;
+           // txtSearch.LostFocus += TxtSearch_LostFocus;
+           // txtSearch.TextChanged += TxtSearch_TextChanged;
+           // Delay.Tick += DebounceTimer_Tick;
         }
 
         // Hàm bo tròn 4 góc cho Panel hoặc Control kèm giải phóng Region cũ
@@ -95,20 +95,7 @@ namespace NT106_GROUP10
         // Đặt lại đồng hồ đếm 500ms mỗi khi người dùng gõ phím mới
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {
-            if (_isPlaceholder)
-                return;
 
-            Delay.Stop();
-
-            if (string.IsNullOrWhiteSpace(txtSearch.Text))
-            {
-                Kqua.Controls.Clear();
-                lblStatus.Text = "Nhập username ID hoặc tên người dùng để tìm kiếm";
-                return;
-            }
-
-            lblStatus.Text = "Đang gõ...";
-            Delay.Start();
         }
 
         // Gửi yêu cầu tìm kiếm sau khi người dùng ngừng gõ đủ 500ms
