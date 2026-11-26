@@ -95,7 +95,20 @@ namespace NT106_GROUP10
         // Đặt lại đồng hồ đếm 500ms mỗi khi người dùng gõ phím mới
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {
+            if (_isPlaceholder)
+                return;
 
+            Delay.Stop();
+
+            if (string.IsNullOrWhiteSpace(txtSearch.Text))
+            {
+                Kqua.Controls.Clear();
+                lblStatus.Text = "Nhập username ID hoặc tên người dùng để tìm kiếm";
+                return;
+            }
+
+            lblStatus.Text = "Đang gõ...";
+            Delay.Start();
         }
 
         // Gửi yêu cầu tìm kiếm sau khi người dùng ngừng gõ đủ 500ms

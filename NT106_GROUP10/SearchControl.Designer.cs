@@ -118,6 +118,7 @@
             // Delay
             // 
             this.Delay.Interval = 500;
+            this.Delay.Tick += new System.EventHandler(this.DebounceTimer_Tick);
             // 
             // SearchControl
             // 
