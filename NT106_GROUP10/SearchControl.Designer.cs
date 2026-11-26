@@ -73,9 +73,8 @@
             this.lblStatus.ForeColor = System.Drawing.Color.Gray;
             this.lblStatus.Location = new System.Drawing.Point(80, 122);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(279, 20);
+            this.lblStatus.Size = new System.Drawing.Size(0, 20);
             this.lblStatus.TabIndex = 3;
-            this.lblStatus.Text = "Nhập ID hoặc tên người dùng để tìm kiếm";
             // 
             // pnlSearch
             // 
@@ -88,7 +87,7 @@
             this.pnlSearch.Location = new System.Drawing.Point(80, 70);
             this.pnlSearch.Name = "pnlSearch";
             this.pnlSearch.Padding = new System.Windows.Forms.Padding(14, 10, 14, 8);
-            this.pnlSearch.Size = new System.Drawing.Size(702, 42);
+            this.pnlSearch.Size = new System.Drawing.Size(702, 45);
             this.pnlSearch.TabIndex = 2;
             // 
             // txtSearch
@@ -102,7 +101,8 @@
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(674, 25);
             this.txtSearch.TabIndex = 0;
-            this.txtSearch.Text = "Tìm kiếm";
+            this.txtSearch.Enter += new System.EventHandler(this.TxtSearch_GotFocus);
+            this.txtSearch.Leave += new System.EventHandler(this.TxtSearch_LostFocus);
             // 
             // label1
             // 

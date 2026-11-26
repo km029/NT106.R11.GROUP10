@@ -261,7 +261,8 @@
             // 
             // LoginForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            this.AcceptButton = this.btnLogin;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 23F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.BackgroundImage = global::NT106_GROUP10.Properties.Resources.BackgroundLogin;

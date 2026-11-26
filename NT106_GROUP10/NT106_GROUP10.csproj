@@ -250,6 +250,12 @@
     <Compile Include="SupabaseAuthService.cs" />
     <Compile Include="SupabaseConfig.cs" />
     <Compile Include="SupabaseFriendService.cs" />
+    <Compile Include="UserItemCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserItemCard.Designer.cs">
+      <DependentUpon>UserItemCard.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserSession.cs" />
     <EmbeddedResource Include="ForgotPasswordForm.resx">
       <DependentUpon>ForgotPasswordForm.cs</DependentUpon>
@@ -290,6 +296,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SearchControl.resx">
       <DependentUpon>SearchControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserItemCard.resx">
+      <DependentUpon>UserItemCard.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
